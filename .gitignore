@@ -65,3 +65,4 @@ frontend/.env
 
 # Jupyter
 .ipynb_checkpoints/
+src/detection/face_landmarker.task
