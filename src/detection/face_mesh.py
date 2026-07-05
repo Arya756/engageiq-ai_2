@@ -8,7 +8,11 @@ from pathlib import Path
 
 import numpy as np
 
-LANDMARK_COUNT = 468
+# NOTE: 478 = 468 base mesh points + 10 iris points (indices 468-477).
+# Previously this truncated to 468, which silently dropped the iris
+# landmarks the gaze classifier (#10) needs -- bumped to 478 to match the
+# module docstring above and actually expose them.
+LANDMARK_COUNT = 478
 _DEFAULT_MODEL_PATH = os.environ.get(
     "FACE_LANDMARKER_MODEL",
     str(Path(__file__).parent / "face_landmarker.task"),

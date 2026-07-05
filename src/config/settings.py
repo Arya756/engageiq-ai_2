@@ -37,6 +37,13 @@ class Settings(BaseSettings):
     expression_weight: float = 0.25
     alertness_weight: float = 0.25
 
+    # Gaze classifier thresholds (see src/detection/gaze_classifier.py)
+    gaze_yaw_threshold_deg: float = 20.0
+    gaze_pitch_down_threshold_deg: float = -25.0
+    gaze_ear_threshold: float = 0.2
+    gaze_iris_left_threshold: float = 0.35
+    gaze_iris_right_threshold: float = 0.65
+
     # Nudge settings
     nudge_cooldown_seconds: int = 300
     max_nudges_per_session: int = 5
