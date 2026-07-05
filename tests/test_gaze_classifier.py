@@ -16,7 +16,6 @@ from src.detection.gaze_classifier import (
     compute_iris_ratio,
 )
 
-
 # -------------------------------------------------------------------------
 # One test per gaze state (acceptance criteria: at least 5 tests)
 # -------------------------------------------------------------------------

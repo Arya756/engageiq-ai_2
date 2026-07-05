@@ -139,8 +139,8 @@ def classify_gaze(
 # 468-477, present when the Face Landmarker model outputs the full
 # 478-point set)
 # ---------------------------------------------------------------------------
-EYE_A_CORNERS = (33, 133)      # outer, inner corner of one eye
-EYE_B_CORNERS = (362, 263)     # outer, inner corner of the other eye
+EYE_A_CORNERS = (33, 133)  # outer, inner corner of one eye
+EYE_B_CORNERS = (362, 263)  # outer, inner corner of the other eye
 
 EYE_A_IRIS_CENTER = 468
 EYE_A_IRIS_BOUNDARY = (469, 470, 471, 472)
@@ -185,7 +185,8 @@ def compute_iris_ratio(landmarks: Sequence[Tuple[float, float]]) -> Optional[flo
 
 
 def _ear_for_eye(
-    landmarks: Sequence[Tuple[float, float]], points: Tuple[int, int, int, int, int, int]
+    landmarks: Sequence[Tuple[float, float]],
+    points: Tuple[int, int, int, int, int, int],
 ) -> float:
     p1, p2, p3, p4, p5, p6 = (landmarks[i] for i in points)
     vertical = math.dist(p2, p6) + math.dist(p3, p5)
@@ -206,10 +207,10 @@ def compute_ear(landmarks: Sequence[Tuple[float, float]]) -> float:
 # Live webcam demo
 # ---------------------------------------------------------------------------
 _DEMO_COLORS_BGR = {
-    GazeState.AT_SCREEN: (0, 200, 0),        # green
-    GazeState.AWAY_LEFT: (0, 0, 220),        # red
-    GazeState.AWAY_RIGHT: (0, 0, 220),       # red
-    GazeState.LOOKING_DOWN: (0, 200, 220),   # yellow
+    GazeState.AT_SCREEN: (0, 200, 0),  # green
+    GazeState.AWAY_LEFT: (0, 0, 220),  # red
+    GazeState.AWAY_RIGHT: (0, 0, 220),  # red
+    GazeState.LOOKING_DOWN: (0, 200, 220),  # yellow
     GazeState.EYES_CLOSED: (160, 160, 160),  # gray
 }
 
