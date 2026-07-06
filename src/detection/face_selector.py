@@ -1,5 +1,6 @@
 """Select and track the primary face from multiple detected faces."""
 
+import argparse
 import time
 
 import cv2
@@ -149,3 +150,21 @@ class FaceSelector:
 
 if __name__ == "__main__":
     run_demo()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--demo",
+        action="store_true",
+        help="Run webcam demo",
+    )
+
+    args = parser.parse_args()
+
+    if args.demo:
+        run_demo()
+
+
+if __name__ == "__main__":
+    main()
