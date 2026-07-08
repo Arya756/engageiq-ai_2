@@ -70,12 +70,21 @@ This issue was about implementing head pose estimation to determine if a student
 
 This issue was about building a gaze classifier that combines head pose with iris position to determine where a student is actually looking, since head pose alone can't tell you that — you can face the screen while your eyes glance elsewhere. I implemented classify_gaze, which takes pitch, yaw, iris ratio, and EAR and returns one of 5 states: at_screen, away_left, away_right, looking_down, or eyes_closed. The away_left/away_right states trigger on either head yaw beyond threshold OR the iris drifting toward a corner, which is what lets the classifier catch a straight head with eyes glancing sideways rather than relying on head pose alone. All thresholds (yaw, pitch, EAR, iris ratio) are configurable through settings rather than hardcoded. While testing on webcam, I noticed head_pose.py (#9) occasionally returns a flipped yaw value on near-frontal faces — a known solvePnP ambiguity — and flagged it to be checked separately, since it doesn't affect this module's own logic. I verified the classifier with 20 tests covering each of the 5 states individually, priority ordering between states, boundary conditions, and threshold overrides, along with a live webcam demo with color-coded overlay, all passing.
 
+---
 
 
 ## Issue 11
+**By:** Gargi
+
+This issue was about implementing a multi-face selector for group webcam scenarios where multiple students may appear in the same frame. I added bounding box support to the face detection module, implemented a `FaceSelector` that selects the largest face on the first frame and tracks the same face across subsequent frames using a lightweight landmark-based embedding, added timeout handling to reset tracking if the primary face disappears for more than 5 seconds, created a webcam demo to visualize the selected face, and wrote automated tests covering single-face selection, multi-face selection, tracking persistence, and face disappearance.
+
+---
+
+## Issue 12
 **By:** Ayush Aryan
 
 This issue was about adding a feature to detect if a student is falling asleep, which is a strong sign they are losing focus. I built a drowsiness detector that tracks the shape of the eyes using 6 specific points around the eye to calculate how "open" or "closed" they are. 
 To make sure it doesn't accidentally flag normal, quick blinks as drowsiness, I added a timer so it only triggers a warning if the eyes stay closed for more than 1.5 seconds. I also created a live webcam demo that draws yellow dots on the eyes and flashes a "DROWSY!" warning on the screen when the user closes their eyes for too long. Finally, I wrote tests to make sure the system accurately tells the difference between open eyes, closed eyes, and normal blinking.
 
 ---
+

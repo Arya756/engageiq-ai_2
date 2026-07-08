@@ -25,6 +25,7 @@ class DetectedFace:
 
     landmarks: list[tuple[float, float, float]]
     confidence: float
+    bbox: list[float]
 
 
 @dataclass
@@ -119,13 +120,27 @@ class FaceMeshDetector:
             if len(landmarks) < LANDMARK_COUNT:
                 continue
 
+            x_coords = [lm[0] for lm in landmarks]
+            y_coords = [lm[1] for lm in landmarks]
+
+            padding_x = 0.03
+            padding_top = 0.04
+            padding_bottom = 0.03
+
+            bbox = [
+                max(0.0, min(x_coords) - padding_x),
+                max(0.0, min(y_coords) - padding_top),
+                min(1.0, max(x_coords) + padding_x),
+                min(1.0, max(y_coords) + padding_bottom),
+            ]
+
             detected_faces.append(
                 DetectedFace(
                     landmarks=landmarks[:LANDMARK_COUNT],
                     confidence=confidence,
+                    bbox=bbox,
                 )
             )
-
         return FaceMeshResult(faces=detected_faces)
 
     def _extract_confidence(self, face_landmarks, scores_list, index: int) -> float:
