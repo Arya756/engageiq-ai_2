@@ -79,3 +79,10 @@ This issue was about implementing a multi-face selector for group webcam scenari
 
 ---
 
+
+## Issue 13
+**By:** Yuvraj
+
+This issue was about detecting yawns using the Mouth Aspect Ratio (MAR). I implemented compute_mar which measures how open the mouth is and YawnDetector which only triggers after the mouth stays open for 2+ seconds so normal speech does not cause false positives. It also tracks yawn frequency and marks a student as fatigued after 3 yawns in 10 minutes. Tested it live with webcam.
+
+---
