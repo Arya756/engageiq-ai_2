@@ -95,3 +95,11 @@ To make sure it doesn't accidentally flag normal, quick blinks as drowsiness, I 
 This issue was about detecting yawns using the Mouth Aspect Ratio (MAR). I implemented compute_mar which measures how open the mouth is and YawnDetector which only triggers after the mouth stays open for 2+ seconds so normal speech does not cause false positives. It also tracks yawn frequency and marks a student as fatigued after 3 yawns in 10 minutes. Tested it live with webcam.
 
 ---
+
+
+## Issue 14
+**By:** Gargi
+
+This issue was about implementing a facial expression classifier for classroom engagement analysis. I integrated a pre-trained FER model with lazy loading, mapped the original FER emotion outputs to the four required classroom specific classes (Engaged, Confused, Bored and Neutral) and added confidence based fallback handling so uncertain predictions return a Neutral state instead of unreliable results. I also implemented a webcam demo for real time expression detection and wrote automated tests covering all four expression classes and the low-confidence fallback scenario. After syncing with the latest dev, I verified the implementation by running formatting, linting and the complete test suite successfully.
+
+---
