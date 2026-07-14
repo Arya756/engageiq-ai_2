@@ -92,7 +92,7 @@ To make sure it doesn't accidentally flag normal, quick blinks as drowsiness, I 
 ## Issue 13
 **By:** Yuvraj
 
-This issue was about detecting yawns using the Mouth Aspect Ratio (MAR). I implemented compute_mar which measures how open the mouth is and YawnDetector which only triggers after the mouth stays open for 2+ seconds so normal speech does not cause false positives. It also tracks yawn frequency and marks a student as fatigued after 3 yawns in 10 minutes. Tested it live with webcam.
+This issue was about detecting yawns using the Mouth Aspect Ratio (MAR). I implemented compute_mar which measures how open the mouth is and YawnDetector which only triggers after the mouth stays open for 2+ seconds so normal speech does not cause false positives. It also tracks yawn frequency and marks a student as fatigued after 3 yawns in 10 minutes. Tested it live with webcam. Add hand over mouth occlusion handling with an occlusion grace proxy so yawns started before covering still count. Combine MAR with jaw/head/eye cues using conservative, tunable rules to avoid false positives. Includes a demo overlay for live tuning and accompanying unit tests.
 
 ---
 
