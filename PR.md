@@ -117,3 +117,9 @@ This issue was about building a weighted engagement scorer that combines gaze, h
 ---
 
 
+## Issue 18
+**By:** Yuvraj
+
+Raw engagement scores are super noisy brief things like nose scratches or quick head turns cause instant, false score drops. To fix this, I built the `TemporalFilter` class using a sliding window (bounded by a `deque`) and a downward step clamp to smooth out these single frame anomalies. On startup, it returns raw scores to prevent lag, then transitions into the sliding average. I also added a full test suite covering stable states, blips, sustained drops, and reset behavior.
+
+---
