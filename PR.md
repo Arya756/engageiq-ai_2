@@ -103,3 +103,13 @@ This issue was about detecting yawns using the Mouth Aspect Ratio (MAR). I imple
 This issue was about implementing a facial expression classifier for classroom engagement analysis. I integrated a pre-trained FER model with lazy loading, mapped the original FER emotion outputs to the four required classroom specific classes (Engaged, Confused, Bored and Neutral) and added confidence based fallback handling so uncertain predictions return a Neutral state instead of unreliable results. I also implemented a webcam demo for real time expression detection and wrote automated tests covering all four expression classes and the low-confidence fallback scenario. After syncing with the latest dev, I verified the implementation by running formatting, linting and the complete test suite successfully.
 
 ---
+
+
+## Issue 16
+**By:** Gargi
+
+This issue was about building a weighted engagement scorer that combines gaze, head pose, facial expression and alertness into a single 0 – 100 engagement score. I implemented configurable scoring with support for different course type profiles, added proportional weight redistribution when one or more signals are unavailable, created scoring weight profiles and comprehensive tests covering high, low, mixed, missing-signal and profile based scenarios. The implementation is currently configurable through predefined profiles and in future it can be extended to support teacher selected course specific profiles and custom weight configurations.
+
+---
+
+
