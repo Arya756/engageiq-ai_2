@@ -92,7 +92,7 @@ To make sure it doesn't accidentally flag normal, quick blinks as drowsiness, I 
 ## Issue 13
 **By:** Yuvraj
 
-This issue was about detecting yawns using the Mouth Aspect Ratio (MAR). I implemented compute_mar which measures how open the mouth is and YawnDetector which only triggers after the mouth stays open for 2+ seconds so normal speech does not cause false positives. It also tracks yawn frequency and marks a student as fatigued after 3 yawns in 10 minutes. Tested it live with webcam.
+This issue was about detecting yawns using the Mouth Aspect Ratio (MAR). I implemented compute_mar which measures how open the mouth is and YawnDetector which only triggers after the mouth stays open for 2+ seconds so normal speech does not cause false positives. It also tracks yawn frequency and marks a student as fatigued after 3 yawns in 10 minutes. Tested it live with webcam. Add hand over mouth occlusion handling with an occlusion grace proxy so yawns started before covering still count. Combine MAR with jaw/head/eye cues using conservative, tunable rules to avoid false positives. Includes a demo overlay for live tuning and accompanying unit tests.
 
 ---
 
@@ -109,3 +109,11 @@ This issue was about implementing a facial expression classifier for classroom e
 **By:** Anuradha
 
 This issue was about creating a documented training notebook for the classroom expression classifier. I built a Jupyter notebook that automatically downloads the FER2013 dataset, maps the original 7 emotion classes to the 4 required classroom engagement classes and explains the reasoning behind the mapping along with the dataset's known biases. I fine-tuned an ImageNet-pretrained ResNet18 using webcam-relevant data augmentations, evaluated it with confusion matrices and per-class metrics, and exported the best model checkpoint to `models/expression_model.pth`. The final model achieved 72.4% validation accuracy and 72.1% test accuracy, meeting the project target.
+## Issue 16
+**By:** Gargi
+
+This issue was about building a weighted engagement scorer that combines gaze, head pose, facial expression and alertness into a single 0 – 100 engagement score. I implemented configurable scoring with support for different course type profiles, added proportional weight redistribution when one or more signals are unavailable, created scoring weight profiles and comprehensive tests covering high, low, mixed, missing-signal and profile based scenarios. The implementation is currently configurable through predefined profiles and in future it can be extended to support teacher selected course specific profiles and custom weight configurations.
+
+---
+
+

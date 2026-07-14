@@ -1,28 +1,41 @@
 """Multi-signal engagement scorer."""
 
+from src.config.scoring_weights import SCORING_WEIGHT_PROFILES
 from src.config.settings import settings
 
 
 def compute_engagement_score(
-    gaze_score: float,
-    pose_score: float,
-    expression_score: float,
-    alertness_score: float,
+    gaze_score: float | None,
+    pose_score: float | None,
+    expression_score: float | None,
+    alertness_score: float | None,
 ) -> float:
-    """Compute weighted engagement score from multiple CV signals.
+    """Compute weighted engagement score from multiple CV signals."""
 
-    Args:
-        gaze_score: 0-100 score from gaze classifier.
-        pose_score: 0-100 score from head pose.
-        expression_score: 0-100 score from expression classifier.
-        alertness_score: 0-100 score from drowsiness/yawn detectors.
+    weights = SCORING_WEIGHT_PROFILES[settings.course_type]
 
-    Returns:
-        Engagement score 0-100.
-    """
-    return (
-        gaze_score * settings.gaze_weight
-        + pose_score * settings.pose_weight
-        + expression_score * settings.expression_weight
-        + alertness_score * settings.alertness_weight
-    )
+    signals = {
+        "gaze": (gaze_score, weights.gaze),
+        "pose": (pose_score, weights.pose),
+        "expression": (expression_score, weights.expression),
+        "alertness": (alertness_score, weights.alertness),
+    }
+
+    available = {
+        name: (score, weight)
+        for name, (score, weight) in signals.items()
+        if score is not None
+    }
+
+    if not available:
+        return 0.0
+
+    total_weight = sum(weight for _, weight in available.values())
+
+    score = 0.0
+
+    for value, weight in available.values():
+        normalized_weight = weight / total_weight
+        score += value * normalized_weight
+
+    return float(score)
