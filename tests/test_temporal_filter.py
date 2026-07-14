@@ -1,13 +1,14 @@
 """Tests for temporal filtering of engagement scores."""
 
 import pytest
+
 from src.scoring.temporal_filter import TemporalFilter
 
 
 def test_cold_start_raw_scores():
     """Before the buffer fills, the filter must return raw input scores."""
     tf = TemporalFilter(window_size=10)
-    
+
     # Feeding varying values. Because buffer is not full, it returns raw scores.
     assert tf.smooth(50.0) == 50.0
     assert tf.smooth(60.0) == 60.0
@@ -29,7 +30,7 @@ def test_single_anomaly_natural_suppression():
     # Fill the buffer
     for _ in range(30):
         tf.smooth(85.0)
-    
+
     # Inject one frame of anomaly (nose scratch)
     smoothed = tf.smooth(10.0)
     # Natural average is (29*85 + 10)/30 = 82.5.
@@ -44,7 +45,7 @@ def test_max_step_clamping():
     tf = TemporalFilter(window_size=5, max_step=2.0)
     for _ in range(5):
         tf.smooth(85.0)
-        
+
     # Inject a 0.0 score.
     # Natural average would be: (85.0 * 4 + 0.0) / 5 = 68.0.
     # But max_step limits the drop to 2.0, so the score is clamped at 85.0 - 2.0 = 83.0.
@@ -57,7 +58,7 @@ def test_upward_change_no_clamp():
     tf = TemporalFilter(window_size=5, max_step=2.0)
     for _ in range(5):
         tf.smooth(50.0)
-        
+
     # Inject a higher score of 100.0.
     # Average increases to (50.0 * 4 + 100.0) / 5 = 60.0.
     # The increase is 10.0 points. Since max_step only limits downward drops,
@@ -72,11 +73,11 @@ def test_sustained_change():
     # Start high
     for _ in range(30):
         tf.smooth(85.0)
-        
+
     # Sustained low scores for 45 frames
     for _ in range(45):
         smoothed = tf.smooth(25.0)
-        
+
     # The average should be exactly 25.0 since the buffer is entirely 25.0
     assert abs(smoothed - 25.0) < 0.1
 
@@ -97,12 +98,12 @@ def test_reset_functionality():
     tf = TemporalFilter(window_size=5)
     for _ in range(5):
         tf.smooth(85.0)
-        
+
     # Reset filter
     tf.reset()
     assert len(tf._buffer) == 0
     assert tf._last_smoothed is None
-    
+
     # Should act like a cold start again and return raw scores
     assert tf.smooth(50.0) == 50.0
 
