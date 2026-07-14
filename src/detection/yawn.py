@@ -148,17 +148,17 @@ def compute_mar(mouth_landmarks: list[tuple[float, float]]) -> float:
     A closed mouth gives MAR ~0.0-0.3
     Speech gives MAR ~0.3-0.5 (brief)
     A yawn gives MAR ~0.6+ (sustained)
-    """ 
+    """
     if not mouth_landmarks or len(mouth_landmarks) < 4:
         return 0.0
 
     try:
-        if len(mouth_landmarks) >= 292: 
+        if len(mouth_landmarks) >= 292:
             left = mouth_landmarks[61]
             top = mouth_landmarks[13]
             right = mouth_landmarks[291]
             bottom = mouth_landmarks[14]
-        else: 
+        else:
             left = mouth_landmarks[0]
             top = mouth_landmarks[1]
             right = mouth_landmarks[2]
@@ -168,15 +168,13 @@ def compute_mar(mouth_landmarks: list[tuple[float, float]]) -> float:
         horizontal_dist = _distance((left[0], left[1]), (right[0], right[1]))
         if horizontal_dist == 0.0:
             return 0.0
-        return vertical_dist / horizontal_dist 
+        return vertical_dist / horizontal_dist
 
     except (IndexError, TypeError, ValueError):
         return 0.0
 
 
-def compute_eye_aspect_ratio(
-    landmarks: list[tuple[float, float, float]]
-) -> float:
+def compute_eye_aspect_ratio(landmarks: list[tuple[float, float, float]]) -> float:
     """Compute average EAR for both eyes from face landmarks."""
     if not landmarks or len(landmarks) <= max(EYE_A_EAR_POINTS + EYE_B_EAR_POINTS):
         return 0.0
@@ -193,9 +191,7 @@ def compute_eye_aspect_ratio(
     return (_ear(EYE_A_EAR_POINTS) + _ear(EYE_B_EAR_POINTS)) / 2.0
 
 
-def compute_jaw_ratio(
-    landmarks: list[tuple[float, float, float]]
-) -> float:
+def compute_jaw_ratio(landmarks: list[tuple[float, float, float]]) -> float:
     """Compute jaw drop ratio relative to mouth width."""
     if not landmarks or len(landmarks) <= max(
         MOUTH_LEFT, MOUTH_RIGHT, MOUTH_TOP, MOUTH_BOTTOM, CHIN
@@ -247,11 +243,11 @@ class YawnDetector:
 
     FATIGUE_YAWN_COUNT = 3
 
-    def __init__(self, mar_threshold: float = 0.6, yawn_duration: float = 2.0): 
+    def __init__(self, mar_threshold: float = 0.6, yawn_duration: float = 2.0):
         self.mar_threshold = mar_threshold
         self.yawn_duration = yawn_duration
         self.yawn_count = 0
-        self._yawn_timestamps: list[float] = [] 
+        self._yawn_timestamps: list[float] = []
         self._is_yawning = False
         self._yawn_start_time = 0.0
         self._yawn_recorded = False
@@ -305,7 +301,7 @@ class YawnDetector:
         yawn_open = mar >= self.mar_threshold or support
 
         if yawn_open:
-            if not self._is_yawning: 
+            if not self._is_yawning:
                 self._is_yawning = True
                 self._yawn_start_time = timestamp
                 self._yawn_recorded = False
@@ -314,16 +310,16 @@ class YawnDetector:
                 if duration >= self.yawn_duration and not self._yawn_recorded:
                     self.yawn_count += 1
                     self._yawn_timestamps.append(timestamp)
-                    self._yawn_recorded = True 
+                    self._yawn_recorded = True
                     yawn_detected = True
-        else: 
+        else:
             self._is_yawning = False
             self._yawn_recorded = False
 
         return yawn_detected
 
     def record_yawn(self, timestamp: float) -> None:
-        self.yawn_count += 1 
+        self.yawn_count += 1
         self._yawn_timestamps.append(timestamp)
 
     def is_fatigued(
@@ -348,9 +344,9 @@ class YawnDetector:
             return False
 
         reference = (
-            current_time if current_time is not None else (
-                self._yawn_timestamps[-1] if self._yawn_timestamps else time.time()
-            )
+            current_time
+            if current_time is not None
+            else (self._yawn_timestamps[-1] if self._yawn_timestamps else time.time())
         )
         cutoff = reference - window_seconds
         recent_yawns = sum(1 for t in self._yawn_timestamps if t >= cutoff)
@@ -369,7 +365,7 @@ class YawnDetector:
         total_recent = recent_yawns + ear_evidence
         return total_recent >= self.FATIGUE_YAWN_COUNT
 
-    def reset(self) -> None: 
+    def reset(self) -> None:
         self.yawn_count = 0
         self._yawn_timestamps.clear()
         self._is_yawning = False
@@ -378,7 +374,7 @@ class YawnDetector:
 
 
 def _run_demo(camera_index: int = 0) -> None:
-    try: 
+    try:
         import cv2
 
         from src.detection.face_mesh import FaceMeshDetector
@@ -509,7 +505,7 @@ def _run_demo(camera_index: int = 0) -> None:
         detector.close()
 
 
-def main() -> None: 
+def main() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(description="EngageIQ Yawn Detection Demo.")

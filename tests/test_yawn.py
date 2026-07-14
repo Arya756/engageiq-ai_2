@@ -169,18 +169,24 @@ class TestYawnDetectorUpdate:
         """Hand-over-mouth plus jaw motion should trigger a yawn."""
         detector = YawnDetector(mar_threshold=0.9, yawn_duration=2.0)
 
-        assert detector.update(
-            mar=0.2,
-            timestamp=0.0,
-            hand_on_mouth=True,
-            jaw_motion=True,
-        ) is False
-        assert detector.update(
-            mar=0.2,
-            timestamp=1.0,
-            hand_on_mouth=True,
-            jaw_motion=True,
-        ) is False
+        assert (
+            detector.update(
+                mar=0.2,
+                timestamp=0.0,
+                hand_on_mouth=True,
+                jaw_motion=True,
+            )
+            is False
+        )
+        assert (
+            detector.update(
+                mar=0.2,
+                timestamp=1.0,
+                hand_on_mouth=True,
+                jaw_motion=True,
+            )
+            is False
+        )
         result = detector.update(
             mar=0.2,
             timestamp=2.5,
@@ -223,18 +229,24 @@ class TestYawnDetectorUpdate:
             )
 
         # two supports sustained should trigger
-        assert detector.update(
-            mar=0.2,
-            timestamp=0.0,
-            jaw_motion=True,
-            head_motion=True,
-        ) is False
-        assert detector.update(
-            mar=0.2,
-            timestamp=1.0,
-            jaw_motion=True,
-            head_motion=True,
-        ) is False
+        assert (
+            detector.update(
+                mar=0.2,
+                timestamp=0.0,
+                jaw_motion=True,
+                head_motion=True,
+            )
+            is False
+        )
+        assert (
+            detector.update(
+                mar=0.2,
+                timestamp=1.0,
+                jaw_motion=True,
+                head_motion=True,
+            )
+            is False
+        )
         result = detector.update(
             mar=0.2,
             timestamp=2.5,
@@ -260,9 +272,7 @@ class TestYawnDetectorUpdate:
         assert detector.update(mar=0.75, timestamp=1.0) is False
 
         # cover now: MAR drops but jaw motion present; occlusion_grace should proxy hand
-        assert detector.update(
-            mar=0.2, timestamp=1.0, jaw_motion=True
-        ) is False
+        assert detector.update(mar=0.2, timestamp=1.0, jaw_motion=True) is False
 
         # later, still covered + jaw motion -> should register yawn (duration from t=0)
         result = detector.update(mar=0.2, timestamp=2.5, jaw_motion=True)
@@ -359,9 +369,12 @@ class TestIsFatigued:
 
         # With EAR samples indicating fatigue, should now report fatigued
         assert (
-            detector.is_fatigued(window_seconds=1000.0, current_time=300.0, ear_values=ear_samples)
+            detector.is_fatigued(
+                window_seconds=1000.0, current_time=300.0, ear_values=ear_samples
+            )
             is True
         )
+
 
 class TestHiddenYawnHelpers:
     """Tests for hidden yawn helper methods."""
@@ -370,21 +383,27 @@ class TestHiddenYawnHelpers:
         face_landmarks = make_face_landmarks()
         hand_bbox = [0.45, 0.45, 0.65, 0.65]
 
-        assert is_hand_over_mouth(
-            hand_bboxes=[hand_bbox],
-            face_landmarks=face_landmarks,
-            frame_size=(1000, 1000),
-        ) is True
+        assert (
+            is_hand_over_mouth(
+                hand_bboxes=[hand_bbox],
+                face_landmarks=face_landmarks,
+                frame_size=(1000, 1000),
+            )
+            is True
+        )
 
     def test_is_hand_over_mouth_rejects_non_overlapping_hand(self):
         face_landmarks = make_face_landmarks()
         hand_bbox = [0.0, 0.0, 0.1, 0.1]
 
-        assert is_hand_over_mouth(
-            hand_bboxes=[hand_bbox],
-            face_landmarks=face_landmarks,
-            frame_size=(1000, 1000),
-        ) is False
+        assert (
+            is_hand_over_mouth(
+                hand_bboxes=[hand_bbox],
+                face_landmarks=face_landmarks,
+                frame_size=(1000, 1000),
+            )
+            is False
+        )
 
     def test_compute_jaw_ratio_returns_positive_for_lowered_chin(self):
         landmarks = make_face_landmarks()
@@ -395,6 +414,7 @@ class TestHiddenYawnHelpers:
         landmarks = make_face_landmarks()
         ear = compute_eye_aspect_ratio(landmarks)
         assert 0.0 < ear < 0.5
+
 
 # ── Threshold edge case tests ──────────────────────────────────────────────────
 
