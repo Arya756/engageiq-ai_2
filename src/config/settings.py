@@ -4,6 +4,8 @@ from enum import Enum
 
 from pydantic_settings import BaseSettings
 
+from src.config.scoring_weights import CourseType
+
 
 class UserRole(str, Enum):
     STUDENT = "student"
@@ -36,6 +38,9 @@ class Settings(BaseSettings):
     pose_weight: float = 0.20
     expression_weight: float = 0.25
     alertness_weight: float = 0.25
+
+    # Course type
+    course_type: CourseType = CourseType.THEORY
 
     # Gaze classifier thresholds (see src/detection/gaze_classifier.py)
     gaze_yaw_threshold_deg: float = 20.0
