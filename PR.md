@@ -105,6 +105,10 @@ This issue was about implementing a facial expression classifier for classroom e
 ---
 
 
+## Issue 15
+**By:** Anuradha
+
+This issue was about creating a documented training notebook for the classroom expression classifier. I built a Jupyter notebook that automatically downloads the FER2013 dataset, maps the original 7 emotion classes to the 4 required classroom engagement classes and explains the reasoning behind the mapping along with the dataset's known biases. I fine-tuned an ImageNet-pretrained ResNet18 using webcam-relevant data augmentations, evaluated it with confusion matrices and per-class metrics, and exported the best model checkpoint to `models/expression_model.pth`. The final model achieved 72.4% validation accuracy and 72.1% test accuracy, meeting the project target.
 ## Issue 16
 **By:** Gargi
 
