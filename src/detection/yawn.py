@@ -389,6 +389,7 @@ def _run_demo(camera_index: int = 0) -> None:
 
     detector = FaceMeshDetector()
     yawn_detector = YawnDetector(mar_threshold=0.6, yawn_duration=2.0)
+    last_yawn_count = 0
 
     print("Yawn Demo running. Press Q to quit.")
 
@@ -438,6 +439,12 @@ def _run_demo(camera_index: int = 0) -> None:
                     head_motion=head_motion,
                     eye_fatigue=eye_fatigue,
                 )
+
+                if yawn_detector.yawn_count != last_yawn_count:
+                    print(
+                        f"Yawn detected at {current_time:.1f}s, total count={yawn_detector.yawn_count}"
+                    )
+                    last_yawn_count = yawn_detector.yawn_count
 
                 is_yawning_now = yawn_detector._is_yawning and (
                     current_time - yawn_detector._yawn_start_time
