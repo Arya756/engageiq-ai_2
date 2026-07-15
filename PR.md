@@ -61,10 +61,8 @@ This issue was about setting up face detection by using face mesh mediapipe. I i
 
 This issue was about implementing head pose estimation to determine if a student is facing the screen. I built estimate_head_pose using OpenCV's solvePnP, which takes 6 key landmarks from the 468-point Face Mesh (nose tip, chin, left/right eye corners, left/right mouth corners) and matches them against a generic 3D face model to compute pitch, yaw, and roll in degrees. I handled edge cases explicitly rather than relying on solvePnP's own success flag — the function returns None gracefully when too few landmarks are visible, when a reference point is occluded (NaN), and when the landmarks collapse into a degenerate configuration that solvePnP would otherwise "solve" with a meaningless result. I also added a demo mode that draws a 3-axis gizmo on the nose tip in the live webcam feed so pose changes are visible in real time. I verified accuracy using synthetic ground-truth poses — known rotations projected back to 2D and checked that the estimator recovers them — covering frontal, left-turn, right-turn, downward-tilt, and combined rotations, all within the 5-degree accuracy requirement, plus the three occlusion/degeneracy edge cases, for 10 tests total, all passing.
 
+
 ---
-
-
-
 ## Issue 10
 **By:** Anuradha
 
@@ -117,6 +115,11 @@ This issue was about building a weighted engagement scorer that combines gaze, h
 ---
 
 
+## Issue 17
+
+**By:** Aparna Singh
+
+This issue was about implementing the engagement state machine that converts a continuous engagement score into discrete, actionable states for downstream agents. I built a finite state machine with five states — ENGAGED, PASSIVE, DISTRACTED, DROWSY, and CONFUSED — where normal engagement is determined from configurable score ranges while CONFUSED and DROWSY act as override states based on expression and drowsiness signals. To prevent rapid state oscillations caused by noisy scores, I implemented configurable temporal hysteresis so a candidate state must remain valid for its required duration before a transition is confirmed. I added transition events through a subscriber system so other modules can react to state changes, maintained a bounded history of confirmed states with timestamps for analytics, and included comprehensive validation for configuration, scores, timestamps, and transition logic to handle invalid or inconsistent inputs gracefully. Finally, I developed an extensive test suite covering sustained engagement, hysteresis behavior, gradual state transitions, drowsiness and confusion overrides, event emission, history logging, configurable thresholds, validation, and edge cases, with all project tests passing successfully.
 ## Issue 18
 **By:** Yuvraj
 
