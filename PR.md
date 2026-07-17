@@ -103,6 +103,10 @@ This issue was about implementing a facial expression classifier for classroom e
 ---
 
 
+## Issue 15
+**By:** Anuradha
+
+This issue was about creating a documented training notebook for the classroom expression classifier. I built a Jupyter notebook that automatically downloads the FER2013 dataset, maps the original 7 emotion classes to the 4 required classroom engagement classes and explains the reasoning behind the mapping along with the dataset's known biases. I fine-tuned an ImageNet-pretrained ResNet18 using webcam-relevant data augmentations, evaluated it with confusion matrices and per-class metrics, and exported the best model checkpoint to `models/expression_model.pth`. The final model achieved 72.4% validation accuracy and 72.1% test accuracy, meeting the project target.
 ## Issue 16
 **By:** Gargi
 
@@ -116,5 +120,9 @@ This issue was about building a weighted engagement scorer that combines gaze, h
 **By:** Aparna Singh
 
 This issue was about implementing the engagement state machine that converts a continuous engagement score into discrete, actionable states for downstream agents. I built a finite state machine with five states — ENGAGED, PASSIVE, DISTRACTED, DROWSY, and CONFUSED — where normal engagement is determined from configurable score ranges while CONFUSED and DROWSY act as override states based on expression and drowsiness signals. To prevent rapid state oscillations caused by noisy scores, I implemented configurable temporal hysteresis so a candidate state must remain valid for its required duration before a transition is confirmed. I added transition events through a subscriber system so other modules can react to state changes, maintained a bounded history of confirmed states with timestamps for analytics, and included comprehensive validation for configuration, scores, timestamps, and transition logic to handle invalid or inconsistent inputs gracefully. Finally, I developed an extensive test suite covering sustained engagement, hysteresis behavior, gradual state transitions, drowsiness and confusion overrides, event emission, history logging, configurable thresholds, validation, and edge cases, with all project tests passing successfully.
+## Issue 18
+**By:** Yuvraj
+
+Raw engagement scores are super noisy brief things like nose scratches or quick head turns cause instant, false score drops. To fix this, I built the `TemporalFilter` class using a sliding window (bounded by a `deque`) and a downward step clamp to smooth out these single frame anomalies. On startup, it returns raw scores to prevent lag, then transitions into the sliding average. I also added a full test suite covering stable states, blips, sustained drops, and reset behavior.
 
 ---
