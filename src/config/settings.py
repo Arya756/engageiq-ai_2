@@ -76,9 +76,13 @@ class Settings(BaseSettings):
     # Frontend
     frontend_url: str = "http://localhost:5173"
 
+    # Calibration
+    calibration_storage_dir: str = "data/calibration"
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
 
 
+calibration_storage_dir: str = "data/calibration"
 settings = Settings()
