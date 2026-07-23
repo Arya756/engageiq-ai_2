@@ -126,3 +126,17 @@ This issue was about implementing the engagement state machine that converts a c
 Raw engagement scores are super noisy brief things like nose scratches or quick head turns cause instant, false score drops. To fix this, I built the `TemporalFilter` class using a sliding window (bounded by a `deque`) and a downward step clamp to smooth out these single frame anomalies. On startup, it returns raw scores to prevent lag, then transitions into the sliding average. I also added a full test suite covering stable states, blips, sustained drops, and reset behavior.
 
 ---
+
+
+## Issue 19
+
+**By:** Aparna Singh
+
+
+---
+
+
+## Issue 20
+**By:** Ayush Aryan
+
+This issue was about building a smart LangGraph agent to decide exactly when and how to nudge a distracted student. I built the `NudgeDecisionEngine` to make sure we don't annoy students by nudging too early — it only triggers after 30 straight seconds of distraction, waits for a 5-minute cooldown between nudges, and stops completely after 5 nudges in a session. It also uses a learning loop to look at past history and automatically pick the specific nudge type that worked best for that student before. I tied this all together using a LangGraph state machine, wrote 6 automated tests to prove the limits work.
