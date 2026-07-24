@@ -120,6 +120,8 @@ This issue was about building a weighted engagement scorer that combines gaze, h
 **By:** Aparna Singh
 
 This issue was about implementing the engagement state machine that converts a continuous engagement score into discrete, actionable states for downstream agents. I built a finite state machine with five states — ENGAGED, PASSIVE, DISTRACTED, DROWSY, and CONFUSED — where normal engagement is determined from configurable score ranges while CONFUSED and DROWSY act as override states based on expression and drowsiness signals. To prevent rapid state oscillations caused by noisy scores, I implemented configurable temporal hysteresis so a candidate state must remain valid for its required duration before a transition is confirmed. I added transition events through a subscriber system so other modules can react to state changes, maintained a bounded history of confirmed states with timestamps for analytics, and included comprehensive validation for configuration, scores, timestamps, and transition logic to handle invalid or inconsistent inputs gracefully. Finally, I developed an extensive test suite covering sustained engagement, hysteresis behavior, gradual state transitions, drowsiness and confusion overrides, event emission, history logging, configurable thresholds, validation, and edge cases, with all project tests passing successfully.
+
+---
 ## Issue 18
 **By:** Yuvraj
 
@@ -132,6 +134,7 @@ Raw engagement scores are super noisy brief things like nose scratches or quick 
 
 **By:** Aparna Singh
 
+This issue focused on implementing a per-student calibration system to personalize engagement detection thresholds instead of relying on fixed global values. I developed a calibration pipeline that collects baseline biometric data while the student maintains a neutral posture, validates each captured frame, and computes personalized resting Eye Aspect Ratio (EAR), neutral head pose, and expression baselines. Based on these measurements, the system automatically derives individualized thresholds, including a calibrated EAR threshold for drowsiness detection while preserving configurable pose tolerances. I implemented robust session management with configurable calibration duration, frame validation, baseline aggregation, threshold computation, and persistent storage of calibration profiles as JSON files for later use. To improve reliability, I added comprehensive input validation, graceful handling of unavailable expression detection through fallback behavior, and safeguards against invalid or incomplete calibration sessions. Finally, I created a complete test suite covering successful calibration, invalid samples, threshold generation, session lifecycle, persistence, configuration validation, and edge cases, ensuring the calibration pipeline operates reliably and integrates seamlessly with the existing engagement scoring system.
 
 ---
 
@@ -140,3 +143,11 @@ Raw engagement scores are super noisy brief things like nose scratches or quick 
 **By:** Ayush Aryan
 
 This issue was about building a smart LangGraph agent to decide exactly when and how to nudge a distracted student. I built the `NudgeDecisionEngine` to make sure we don't annoy students by nudging too early — it only triggers after 30 straight seconds of distraction, waits for a 5-minute cooldown between nudges, and stops completely after 5 nudges in a session. It also uses a learning loop to look at past history and automatically pick the specific nudge type that worked best for that student before. I tied this all together using a LangGraph state machine, wrote 6 automated tests to prove the limits work.
+
+---
+
+## Issue 21
+
+**By:** Aparna Singh
+
+This issue focused on implementing a multi-channel nudge delivery system to provide timely and non-intrusive engagement reminders. I developed the backend delivery service supporting browser notifications, visual overlays, and optional audio nudges while respecting individual student preferences and logging each delivered nudge for future effectiveness tracking. I also implemented the `NudgeOverlay` React component to display a subtle screen-edge glow, integrate browser notifications and audio cues, and automatically dismiss nudges after a short duration. Additionally, I added a CLI for manually testing each delivery channel and verified backend functionality, database persistence, and seamless integration with the existing nudge decision pipeline.
