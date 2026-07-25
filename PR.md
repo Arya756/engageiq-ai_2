@@ -151,3 +151,10 @@ This issue was about building a smart LangGraph agent to decide exactly when and
 **By:** Aparna Singh
 
 This issue focused on implementing a multi-channel nudge delivery system to provide timely and non-intrusive engagement reminders. I developed the backend delivery service supporting browser notifications, visual overlays, and optional audio nudges while respecting individual student preferences and logging each delivered nudge for future effectiveness tracking. I also implemented the `NudgeOverlay` React component to display a subtle screen-edge glow, integrate browser notifications and audio cues, and automatically dismiss nudges after a short duration. Additionally, I added a CLI for manually testing each delivery channel and verified backend functionality, database persistence, and seamless integration with the existing nudge decision pipeline.
+
+
+
+## Issue 22
+**By:** Anuradha
+
+This issue was about closing the feedback loop on nudges — measuring whether a nudge actually improved a student's engagement instead of just sending it and hoping. I built the `EffectivenessTracker` class, which records a nudge along with the pre-nudge score, collects engagement scores observed in the 60 seconds after, and marks the nudge "effective" if the average post-nudge score improved by 10+ points. It also tracks a per-nudge-type success rate through `get_stats()`, and feeds that history back to the decision agent via `to_decision_history()`, matching the exact `{"type": ..., "success": ...}` format `NudgeDecisionEngine.should_nudge()` already expects, so the existing decision pipeline can consume it directly without changes on its side. For persistence across sessions, rather than adding a new table, I reused the existing `Nudge.effectiveness_delta` column already present on the model. I verified the exact worked example from the issue produces the expected output, and wrote 12 tests covering the core scenarios plus edge cases like window boundaries, multiple nudge types, and DB-persisted history.
