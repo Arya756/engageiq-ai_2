@@ -69,3 +69,21 @@ class User(Base):
     reports: Mapped[List["Report"]] = relationship(
         "Report", back_populates="user", cascade="all, delete-orphan"
     )
+
+    notification_enabled: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=False,
+    )
+
+    overlay_enabled: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=False,
+    )
+
+    audio_enabled: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=False,
+    )
