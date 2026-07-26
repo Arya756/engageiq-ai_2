@@ -87,3 +87,20 @@ class User(Base):
         default=True,
         nullable=False,
     )
+    # =========================================================
+    # Nudge Preferences:-(issue 23)
+    # =========================================================
+    # The time when "quiet hours" starts — no nudges after this time.
+    # Stored as a string in 24-hour format, e.g. "22:00"
+    # nullable=True because quiet hours are optional (student may not set them)
+    quiet_hours_start: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    # The time when "quiet hours" ends and nudges are allowed again.
+    # Stored as a string in 24-hour format, e.g. "08:00"
+    quiet_hours_end: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    # How aggressively to nudge the student.
+    # "less" = 10 min cooldown, "normal" = 5 min (default), "more" = 3 min
+    sensitivity: Mapped[str] = mapped_column(
+        String,
+        default="normal",
+        nullable=False,
+    )

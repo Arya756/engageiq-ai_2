@@ -159,6 +159,21 @@ This issue was about closing the feedback loop on nudges — measuring whether a
 
 ---
 
+## Issue 23
+**By:** Ayush Aryan
+
+This issue was about giving students full control over how and when they receive nudges. A system that forces the same nudges on everyone gets turned off — especially for students studying late at night who don't want audio chimes waking up their roommates. 
+
+To solve this, I built a student-facing preferences system across the entire stack:
+1. **Frontend Panel (`NudgePreferences.jsx`):** Created a clean, responsive UI where students can independently toggle nudge channels (browser notifications, screen overlay, audio chime), set 24-hour quiet hours (start and end times), and adjust nudge sensitivity (`less`, `normal`, `more`).
+2. **Backend API (`src/api/routes/preferences.py` & `src/api/schemas/preferences.py`):** Built `GET` and `PUT` FastAPI endpoints at `/api/preferences/{user_id}` backed by Pydantic validation schemas to fetch and save preferences live with instant updates.
+3. **Database Schema (`src/models/user.py` & Alembic Migration):** Extended the SQLAlchemy `User` model with `quiet_hours_start`, `quiet_hours_end`, and `sensitivity` fields, and ran an Alembic database migration to persist settings across sessions.
+4. **Decision Engine Integration (`src/nudge/nudge_decision.py`):** Updated the `NudgeDecisionEngine` from Issue #20 to strictly respect these preferences in real time. It now checks quiet hours dynamically (even when spanning midnight), completely suppresses audio when disabled, and dynamically adjusts cooldown gaps based on sensitivity (`less` → 10 min, `normal` → 5 min, `more` → 3 min).
+
+I verified the entire flow through automated unit tests (`pytest`), verified database persistence, and tested both `GET` and `PUT` endpoints using `curl` and interactive browser tests.
+
+---
+
 ## Issue 24
 **By:** yuvraj
 
