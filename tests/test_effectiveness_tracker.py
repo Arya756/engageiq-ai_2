@@ -131,6 +131,7 @@ def test_to_decision_history_matches_decision_agent_shape():
     for entry in history:
         assert set(entry.keys()) == {"type", "success"}
 
+
 def test_custom_effective_threshold():
     tracker = EffectivenessTracker(measurement_window=60, effective_threshold=20.0)
     tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=35)
