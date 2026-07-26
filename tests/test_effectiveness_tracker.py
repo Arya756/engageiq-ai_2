@@ -113,24 +113,23 @@ def test_average_of_multiple_post_scores_in_window():
 
 def test_to_decision_history_matches_decision_agent_shape():
     tracker = EffectivenessTracker(measurement_window=60)
-    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=35)
+    tracker.record_nudge(nudge_type="gentle_reminder", timestamp=0, pre_score=35)
     tracker.record_post_score(timestamp=30, score=60)
     tracker.evaluate_last_nudge()
 
-    tracker.record_nudge(nudge_type="audio", timestamp=100, pre_score=30)
+    tracker.record_nudge(nudge_type="focus_check", timestamp=100, pre_score=30)
     tracker.record_post_score(timestamp=130, score=31)
     tracker.evaluate_last_nudge()
 
     history = tracker.to_decision_history()
 
     assert history == [
-        {"type": "notification", "success": True},
-        {"type": "audio", "success": False},
+        {"type": "gentle_reminder", "success": True},
+        {"type": "focus_check", "success": False},
     ]
     # Directly usable by NudgeDecisionEngine.should_nudge(effectiveness_history=...)
     for entry in history:
         assert set(entry.keys()) == {"type", "success"}
-
 
 def test_custom_effective_threshold():
     tracker = EffectivenessTracker(measurement_window=60, effective_threshold=20.0)
