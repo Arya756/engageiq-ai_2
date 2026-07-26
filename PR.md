@@ -151,3 +151,12 @@ This issue was about building a smart LangGraph agent to decide exactly when and
 **By:** Aparna Singh
 
 This issue focused on implementing a multi-channel nudge delivery system to provide timely and non-intrusive engagement reminders. I developed the backend delivery service supporting browser notifications, visual overlays, and optional audio nudges while respecting individual student preferences and logging each delivered nudge for future effectiveness tracking. I also implemented the `NudgeOverlay` React component to display a subtle screen-edge glow, integrate browser notifications and audio cues, and automatically dismiss nudges after a short duration. Additionally, I added a CLI for manually testing each delivery channel and verified backend functionality, database persistence, and seamless integration with the existing nudge decision pipeline.
+
+---
+
+## Issue 24
+**By:** yuvraj
+
+This issue was about giving teachers one class wide view of engagement instead of 60 individual student timelines, while keeping every student's data anonymous. I built the `ClassAggregator` to compute the class pulse mean, median, std dev, min, max, and engaged percentage (score > 70) from a snapshot of scores, plus a minute by minute timeline built incrementally so it can run in real time during a session. It flags a dip whenever the class average drops more than 15% below the session average, since a simultaneous drop across the class points to a content problem, not a student problem. Disconnected students are excluded rather than zeroed out, and a minute where the whole class drops offline (e.g. wifi outage) is excluded entirely instead of being recorded as a fake 0% engagement crash. No method in the class ever accepts a student ID, so anonymization is enforced by design, not just by convention. I wrote tests covering the issue's exact reproduction script plus edge cases like missing data, junk values, and invalid thresholds.
+
+---
