@@ -180,3 +180,18 @@ I verified the entire flow through automated unit tests (`pytest`), verified dat
 This issue was about giving teachers one class wide view of engagement instead of 60 individual student timelines, while keeping every student's data anonymous. I built the `ClassAggregator` to compute the class pulse mean, median, std dev, min, max, and engaged percentage (score > 70) from a snapshot of scores, plus a minute by minute timeline built incrementally so it can run in real time during a session. It flags a dip whenever the class average drops more than 15% below the session average, since a simultaneous drop across the class points to a content problem, not a student problem. Disconnected students are excluded rather than zeroed out, and a minute where the whole class drops offline (e.g. wifi outage) is excluded entirely instead of being recorded as a fake 0% engagement crash. No method in the class ever accepts a student ID, so anonymization is enforced by design, not just by convention. I wrote tests covering the issue's exact reproduction script plus edge cases like missing data, junk values, and invalid thresholds.
 
 ---
+
+## Issue 25
+**By:** Aparna Singh
+
+This issue was about identifying students who may need intervention before a single bad session turns into a consistent engagement problem. Instead of relying on one low score, the system now analyzes engagement history to detect sustained low performance and significant downward trends across multiple sessions. To support this, I built two reusable analytics modules along with comprehensive unit tests.
+
+1. **Trend Analysis (`src/analytics/trend_analyzer.py`):** Built a framework-agnostic analytics utility for engagement trends. It provides rolling averages, rolling average series, percentage decline calculations, timestamp-based 7-day and 30-day rolling window averages, and real week-over-week comparisons using adjacent calendar windows. For scenarios where timestamps are unavailable, it also includes a documented first-half/second-half fallback to approximate trend analysis.
+
+2. **Student Risk Identification (`src/analytics/risk_identifier.py`):** Implemented a reusable `RiskIdentifier` that evaluates each student's engagement history using two independent signals: (a) consecutive sessions below a configurable engagement threshold, and (b) significant week-over-week decline in engagement. Either condition is sufficient to flag a student as at risk, allowing teachers to intervene before engagement deteriorates further.
+
+3. **Validation and Privacy:** Added comprehensive validation for engagement score ranges, configurable thresholds, decline percentages, consecutive session requirements, and chronological session ordering. The module anonymizes student identifiers by default while allowing opted-in students to retain their identity for targeted interventions.
+
+4. **Testing:** Wrote a comprehensive unit test suite covering consecutive low-session detection, declining trend detection, timestamp-based rolling windows, week-over-week analysis, anonymization, validation, edge cases, invalid inputs, and window-boundary behavior. All new functionality was verified with automated tests, and the complete project test suite (`266` tests) passes successfully without regressions.
+
+---
