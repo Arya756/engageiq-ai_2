@@ -195,3 +195,10 @@ This issue was about identifying students who may need intervention before a sin
 4. **Testing:** Wrote a comprehensive unit test suite covering consecutive low-session detection, declining trend detection, timestamp-based rolling windows, week-over-week analysis, anonymization, validation, edge cases, invalid inputs, and window-boundary behavior. All new functionality was verified with automated tests, and the complete project test suite (`266` tests) passes successfully without regressions.
 
 ---
+
+## Issue 30
+**By:** Gargi
+
+This issue was about finding lecture topics that consistently caused engagement to drop across multiple class sessions. I implemented the `DifficultyCorrelator` to store session timelines and reused the existing `ClassAggregator.detect_dips()` method to identify engagement dips. I calculated the average engagement drop and severity for each recurring difficult segment, filtered the results based on the minimum number of sessions and ranked them by severity. I also wrote unit tests to cover the main functionality and edge cases and verified the implementation by running formatting, linting and the complete project test suite successfully.
+
+---
