@@ -61,7 +61,7 @@ class ClassAggregator:
         stats = agg.aggregate([80, 70, 90, 60, 85])
     """
 
-    ENGAGED_THRESHOLD: float = 70.0  # score above which a student is "engaged"
+    ENGAGED_THRESHOLD: float = 0.70  # score above which a student is "engaged"
 
     def __init__(self) -> None:
         # Internal minute-by-minute store populated by update_timeline().

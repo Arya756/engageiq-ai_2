@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session Report - {{ report.title }}</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 32px 16px; }
+  .container { max-width: 900px; margin: 0 auto; }
+  .card { background: #ffffff; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  h1 { font-size: 22px; margin: 0 0 4px 0; }
+  .subtitle { color: #64748b; font-size: 14px; margin-bottom: 4px; }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-top: 16px; }
+  .meta-item .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; }
+  .meta-item .value { font-size: 20px; font-weight: 600; margin-top: 2px; }
+  h2 { font-size: 16px; margin: 0 0 12px 0; }
+  .charts-row { display: flex; flex-wrap: wrap; gap: 20px; }
+  .chart-box { flex: 1 1 380px; }
+  canvas { max-width: 100%; }
+  ul.moments { list-style: none; padding: 0; margin: 0; }
+  ul.moments li { padding: 10px 12px; border-left: 3px solid #f97316; background: #fff7ed; border-radius: 6px; margin-bottom: 8px; font-size: 14px; }
+  ul.moments li .time { font-weight: 600; margin-right: 8px; }
+  .no-data { color: #94a3b8; font-style: italic; font-size: 14px; }
+  .footer { text-align: center; color: #94a3b8; font-size: 12px; margin-top: 8px; }
+  .anon-note { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+  .chart-wrap { position: relative; height: 260px; }
+  .chart-wrap.small { height: 220px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="card">
+    <h1>{{ report.course_name }}{% if report.course_code %} ({{ report.course_code }}){% endif %}</h1>
+    <div class="subtitle">{{ report.title }} &middot; {{ report.start_time }}</div>
+    {% if report.scope == 'student' %}
+    <div class="meta-grid">
+      <div class="meta-item"><div class="label">Your Average</div><div class="value">{{ report.overall_average }}</div></div>
+      <div class="meta-item"><div class="label">Class Average</div><div class="value">{{ report.class_average }}</div></div>
+      <div class="meta-item"><div class="label">You Engaged</div><div class="value">{{ report.engaged_pct }}%</div></div>
+      <div class="meta-item"><div class="label">Duration</div><div class="value">{{ report.duration_minutes }} min</div></div>
+    </div>
+    <div class="anon-note">Personal report &middot; the class average is anonymized (no other student is identified).</div>
+    {% else %}
+    <div class="meta-grid">
+      <div class="meta-item"><div class="label">Class Average</div><div class="value">{{ report.overall_average }}</div></div>
+      <div class="meta-item"><div class="label">Engaged</div><div class="value">{{ report.engaged_pct }}%</div></div>
+      <div class="meta-item"><div class="label">Duration</div><div class="value">{{ report.duration_minutes }} min</div></div>
+      <div class="meta-item"><div class="label">Students</div><div class="value">{{ report.student_count }}</div></div>
+    </div>
+    <div class="anon-note">Class-level view &middot; individual students are never identified.</div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Engagement Timeline</h2>
+    {% if report.has_data %}
+    <div class="chart-wrap"><canvas id="timelineChart"></canvas></div>
+    {% else %}
+    <p class="no-data">No engagement data recorded for this {{ 'student in this ' if report.scope == 'student' }}session yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="card charts-row">
+    <div class="chart-box">
+      <h2>State Distribution</h2>
+      <div class="chart-wrap small"><canvas id="stateChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h2>Top Distraction Moments</h2>
+      {% if report.distraction_moments %}
+      <ul class="moments">
+        {% for m in report.distraction_moments %}
+        <li><span class="time">Minute {{ m.minute }}</span> {{ m.value | round(1) }} vs baseline {{ m.baseline | round(1) }} ({{ (m.drop_pct * 100) | round(0) }}% drop)</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="no-data">No significant engagement dips detected.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="footer">Generated {{ report.generated_at }} &middot; EngageIQ AI</div>
+</div>
+
+<script>
+  const timelineData = {{ timeline_json | safe }};
+  const stateData = {{ state_distribution_json | safe }};
+  const classTimelineData = {{ class_timeline_json | safe }};
+
+  if (timelineData.length > 0) {
+    const datasets = [{
+      label: {{ ("'Your engagement'" if report.scope == 'student' else "'Class average engagement'") | safe }},
+      data: timelineData.map(function (p) { return p.average; }),
+      borderColor: '#3b82f6',
+      backgroundColor: 'rgba(59,130,246,0.1)',
+      tension: 0.3,
+      fill: true,
+      pointRadius: 2,
+    }];
+    if (classTimelineData) {
+      datasets.push({
+        label: 'Class average',
+        data: classTimelineData.map(function (p) { return p.average; }),
+        borderColor: '#94a3b8',
+        borderDash: [5, 5],
+        backgroundColor: 'transparent',
+        tension: 0.3,
+        fill: false,
+        pointRadius: 0,
+      });
+    }
+    new Chart(document.getElementById('timelineChart'), {
+      type: 'line',
+      data: { labels: timelineData.map(function (p) { return 'min ' + p.minute; }), datasets: datasets },
+      options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100 } }, plugins: { legend: { display: classTimelineData !== null } } }
+    });
+  }
+
+  const stateColors = { engaged: '#22c55e', passive: '#eab308', distracted: '#f97316', drowsy: '#ef4444', confused: '#8b5cf6' };
+
+  new Chart(document.getElementById('stateChart'), {
+    type: 'pie',
+    data: {
+      labels: stateData.map(function (s) { return s.state; }),
+      datasets: [{ data: stateData.map(function (s) { return s.percentage; }), backgroundColor: stateData.map(function (s) { return stateColors[s.state] || '#94a3b8'; }) }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+  });
+</script>
+</body>
+</html>

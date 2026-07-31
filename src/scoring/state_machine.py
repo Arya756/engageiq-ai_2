@@ -19,7 +19,7 @@ Classification order per reading:
     3. otherwise                                  -> score mapped into the
                                                        ENGAGED / PASSIVE / DISTRACTED
                                                        partition (must cover
-                                                       [0, 100] with no gaps
+                                                       [0, 1] with no gaps
                                                        or overlaps)
 
 A transition is only *confirmed* (updates `current_state`, gets logged to
@@ -29,7 +29,7 @@ hysteresis window. A brief flicker that reverts before the window elapses is
 discarded and the machine stays in its current state.
 
 Exception: the very first reading a machine ever sees is confirmed
-immediately, with no hysteresis wait (e.g. score=85 on frame 1 -> ENGAGED
+immediately, with no hysteresis wait (e.g. score=0.85 on frame 1 -> ENGAGED
 right away). Hysteresis only applies to *subsequent* transitions.
 
 This module has no external dependencies beyond the standard library so it
@@ -72,8 +72,8 @@ _PARTITION_STATES = frozenset(_PARTITION_ORDER)
 
 # Floating point tolerance used when checking that partition boundaries
 # touch (rather than gap or overlap), to accommodate configs that use
-# "off by a hair" boundaries like max_score=69.999 / min_score=70.
-_BOUNDARY_EPS = 0.01
+# "off by a hair" boundaries like max_score=0.69999 / min_score=0.70.
+_BOUNDARY_EPS = 0.0001
 
 
 @dataclass(frozen=True)
@@ -102,16 +102,16 @@ class StateConfig:
         return self.min_score <= score <= self.max_score
 
 
-ENGAGED_MIN_SCORE = 70.0
-ENGAGED_MAX_SCORE = 100.0
+ENGAGED_MIN_SCORE = 0.70
+ENGAGED_MAX_SCORE = 1.0
 
-PASSIVE_MIN_SCORE = 40.0
-PASSIVE_MAX_SCORE = 69.999
+PASSIVE_MIN_SCORE = 0.40
+PASSIVE_MAX_SCORE = 0.69999
 
 DISTRACTED_MIN_SCORE = 0.0
-DISTRACTED_MAX_SCORE = 39.999
+DISTRACTED_MAX_SCORE = 0.39999
 
-DROWSY_MAX_SCORE = 30.0
+DROWSY_MAX_SCORE = 0.30
 
 ENGAGED_DURATION = 0.0
 PASSIVE_DURATION = 30.0
@@ -194,7 +194,7 @@ class EngagementStateMachine:
     Usage:
         fsm = EngagementStateMachine()
         fsm.subscribe(lambda evt: print(evt.to_dict()))
-        fsm.update(score=82.0, is_drowsy=False, is_confused=False, timestamp=some_datetime)
+        fsm.update(score=0.82, is_drowsy=False, is_confused=False, timestamp=some_datetime)
         fsm.current_state  # -> EngagementState.ENGAGED (confirmed immediately, first reading)
     """
 
@@ -223,14 +223,14 @@ class EngagementStateMachine:
             self.state_config[EngagementState.DISTRACTED] = StateConfig(
                 min_duration_s=dist_cfg.min_duration_s,
                 min_score=DISTRACTED_MIN_SCORE,
-                max_score=p_min - 0.001,
+                max_score=p_min - 0.00001,
             )
 
             pass_cfg = self.state_config[EngagementState.PASSIVE]
             self.state_config[EngagementState.PASSIVE] = StateConfig(
                 min_duration_s=pass_cfg.min_duration_s,
                 min_score=p_min,
-                max_score=e_min - 0.001,
+                max_score=e_min - 0.00001,
             )
 
             eng_cfg = self.state_config[EngagementState.ENGAGED]
@@ -307,7 +307,7 @@ class EngagementStateMachine:
             raise ValueError(
                 f"partition states must start at score 0, got {ordered[0][1].min_score}"
             )
-        if abs(ordered[-1][1].max_score - 100) > _BOUNDARY_EPS:
+        if abs(ordered[-1][1].max_score - 1) > _BOUNDARY_EPS:
             raise ValueError(
                 f"partition states must end at score 100, got {ordered[-1][1].max_score}"
             )
@@ -322,8 +322,8 @@ class EngagementStateMachine:
 
         # DROWSY's cutoff (if set) should be a real score bound.
         drowsy_cfg = self.state_config[EngagementState.DROWSY]
-        if drowsy_cfg.max_score is not None and not (0 <= drowsy_cfg.max_score <= 100):
-            raise ValueError("DROWSY max_score (cutoff) must be within [0, 100]")
+        if drowsy_cfg.max_score is not None and not (0 <= drowsy_cfg.max_score <= 1):
+            raise ValueError("DROWSY max_score (cutoff) must be within [0, 1]")
 
     # ------------------------------------------------------------------ #
     # Event subscription (for downstream agents)
@@ -399,8 +399,8 @@ class EngagementStateMachine:
             raise ValueError("timestamp must be monotonically non-decreasing")
         if not math.isfinite(score):
             raise ValueError("score must be finite")
-        if not (0 <= score <= 100):
-            raise ValueError(f"score must be within [0, 100], got {score}")
+        if not (0 <= score <= 1):
+            raise ValueError(f"score must be within [0, 1], got {score}")
 
         instantaneous_state = self._instantaneous_state(score, is_drowsy, is_confused)
 

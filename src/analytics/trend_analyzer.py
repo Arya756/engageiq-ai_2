@@ -22,11 +22,11 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import List, NamedTuple, Optional, Sequence, Tuple
 
-# Engagement scores are assumed to sit on a 0-100 scale, matching the rest
+# Engagement scores are assumed to sit on a 0-1.0 scale, matching the rest
 # of the scoring pipeline (e.g. EngagementLog). If the real scale differs,
 # update these two constants rather than the validation logic below.
 SCORE_MIN = 0.0
-SCORE_MAX = 100.0
+SCORE_MAX = 1.0
 
 
 @dataclass(frozen=True)

@@ -85,7 +85,7 @@ class TestFrameProcessing:
             ws.send_text(make_frame_message())
             response = json.loads(ws.receive_text())
 
-        assert 0.0 <= response["engagement_score"] <= 100.0
+        assert 0.0 <= response["engagement_score"] <= 1.0
 
     def test_malformed_message_returns_error_not_crash(self):
         """A bad payload should get an error response, not kill the connection."""

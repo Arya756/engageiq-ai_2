@@ -18,7 +18,7 @@ class TemporalFilter:
         Set to 0 to disable clamping.
     """
 
-    def __init__(self, window_size: int = 30, max_step: float = 5.0):
+    def __init__(self, window_size: int = 30, max_step: float = 0.50):
         if window_size < 1:
             raise ValueError("window_size must be >= 1")
         if max_step < 0:
