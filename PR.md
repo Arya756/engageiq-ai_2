@@ -195,3 +195,10 @@ This issue was about identifying students who may need intervention before a sin
 4. **Testing:** Wrote a comprehensive unit test suite covering consecutive low-session detection, declining trend detection, timestamp-based rolling windows, week-over-week analysis, anonymization, validation, edge cases, invalid inputs, and window-boundary behavior. All new functionality was verified with automated tests, and the complete project test suite (`266` tests) passes successfully without regressions.
 
 ---
+
+## Issue 24
+**By:** yuvraj
+
+Implemented the session engagement report generator for both teacher and student views. Added support for generating self-contained HTML reports with session metadata, engagement timeline, state distribution, top distraction moments, and anonymized class average comparison. Reports can be rendered for dashboards, downloaded, or used as email content, and can also be persisted to the database. Additionally, standardized engagement scoring to use a 0–1 scale throughout the backend while converting values to 0–100 only for UI display. This keeps the scoring pipeline consistent with the computer vision output while presenting user-friendly percentages in reports and dashboards. Also updated the reporting pipeline to correctly handle the normalized scores and verified all tests pass successfully.
+
+---
