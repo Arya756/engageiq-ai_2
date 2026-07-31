@@ -18,7 +18,7 @@ class ClassStats:
     std_dev: float
     min_score: float
     max_score: float
-    engaged_pct: float  # fraction (0.0–1.0) of students scoring > 70
+    engaged_pct: float  # fraction (0.0–1.0) of students scoring > 0.70
     student_count: int  # number of students included (disconnected excluded)
 
 
@@ -109,7 +109,7 @@ class ClassAggregator:
         returns a zero-value ClassStats.
 
         Args:
-            scores: List of raw engagement scores (0–100). None, bool, or
+            scores: List of raw engagement scores (0–1). None, bool, or
                     non-numeric values are excluded gracefully.
 
         Returns:

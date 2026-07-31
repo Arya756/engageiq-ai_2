@@ -82,8 +82,8 @@ class EffectivenessTracker:
                 post-nudge engagement scores are collected.
             effective_threshold: minimum average score improvement (on the
                 0-1 engagement-score scale) for a nudge to count as
-                "effective". Per acceptance criteria: 0.10+ (a 10-point
-                improvement on a 0-100 scale).
+                "effective". Default 0.10 (a 10-percentage-point
+                improvement).
             student_id: if given along with `db`, effectiveness deltas are
                 persisted to (and stats are read from) that student's
                 `Nudge` rows in the database, across all their sessions.

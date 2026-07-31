@@ -9,7 +9,7 @@ Converts three input signals into one of 5 discrete, actionable states:
     DROWSY                                (override: drowsiness detector, low score only)
 
 Inputs to `update()`:
-    - score:        continuous engagement score, 0-100 (Issue #16)
+    - score:        continuous engagement score, 0-1 (Issue #16)
     - is_drowsy:     boolean output of the drowsiness detector (Issue #12)
     - is_confused:   boolean output of the expression classifier (Issue #14)
 
@@ -59,7 +59,7 @@ class EngagementState(Enum):
     DROWSY = "drowsy"
 
 
-# States that own a contiguous slice of the 0-100 score axis and together
+# States that own a contiguous slice of the 0-1 score axis and together
 # must partition it with no gaps or overlaps. CONFUSED and DROWSY are
 # *overrides* layered on top of this partition (see _instantaneous_state)
 # and are intentionally excluded here.
@@ -309,7 +309,7 @@ class EngagementStateMachine:
             )
         if abs(ordered[-1][1].max_score - 1) > _BOUNDARY_EPS:
             raise ValueError(
-                f"partition states must end at score 100, got {ordered[-1][1].max_score}"
+                f"partition states must end at score 1, got {ordered[-1][1].max_score}"
             )
         for (s1, c1), (s2, c2) in zip(ordered, ordered[1:]):
             gap = c2.min_score - c1.max_score

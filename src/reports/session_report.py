@@ -49,6 +49,8 @@ class DistractionMoment:
     def to_json_safe(self) -> dict:
         d = asdict(self)
         d["timestamp"] = self.timestamp.isoformat()
+        d["value"] = round(self.value * 100, 1)
+        d["baseline"] = round(self.baseline * 100, 1)
         return d
 
 
@@ -109,16 +111,16 @@ class SessionReportData:
             "duration_minutes": round(self.duration_minutes, 1),
             "student_count": self.student_count,
             "has_data": self.has_data,
-            "overall_average": round(self.overall_average, 1),
+            "overall_average": round(self.overall_average * 100, 1),
             "engaged_pct": round(self.engaged_pct * 100, 1),
             "timeline": [
-                {"minute": m, "average": round(v, 1)}
+                {"minute": m, "average": round(v * 100, 1)}
                 for m, v in sorted(self.timeline.items())
             ],
             "state_distribution": [asdict(s) for s in self.state_distribution],
             "distraction_moments": [d.to_json_safe() for d in self.distraction_moments],
             "class_average": (
-                round(self.class_average, 1) if self.class_average is not None else None
+                round(self.class_average * 100, 1) if self.class_average is not None else None
             ),
             "class_engaged_pct": (
                 round(self.class_engaged_pct * 100, 1)
@@ -127,7 +129,7 @@ class SessionReportData:
             ),
             "class_timeline": (
                 [
-                    {"minute": m, "average": round(v, 1)}
+                    {"minute": m, "average": round(v * 100, 1)}
                     for m, v in sorted(self.class_timeline.items())
                 ]
                 if self.class_timeline is not None
