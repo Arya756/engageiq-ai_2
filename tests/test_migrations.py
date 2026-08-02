@@ -184,7 +184,7 @@ def seeded_db(db):
             Report(
                 session_id=sess.id,
                 user_id=None,
-                report_type="class_summary",
+                report_type="session_summary",
                 content_json={"avg_engagement_score": 0.70},
             )
         )
@@ -306,8 +306,8 @@ class TestSeedData:
         )
         assert all(r.user_id is not None for r in reports)
 
-    def test_class_summary_reports_have_no_user_id(self, seeded_db):
-        reports = seeded_db.query(Report).filter_by(report_type="class_summary").all()
+    def test_session_summary_reports_have_no_user_id(self, seeded_db):
+        reports = seeded_db.query(Report).filter_by(report_type="session_summary").all()
         assert all(r.user_id is None for r in reports)
 
     def test_nudges_linked_to_engagement_logs(self, seeded_db):

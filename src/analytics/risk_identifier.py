@@ -50,7 +50,7 @@ from src.analytics.trend_analyzer import (
     TrendAnalyzer,
 )
 
-DEFAULT_THRESHOLD = 50.0
+DEFAULT_THRESHOLD = 0.50
 DEFAULT_CONSECUTIVE_SESSIONS = 3
 DEFAULT_DECLINE_THRESHOLD_PCT = 10.0
 

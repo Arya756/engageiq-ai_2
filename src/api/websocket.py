@@ -107,12 +107,12 @@ def _run_pipeline(frame: np.ndarray) -> float:
         preprocess = None
 
     if preprocess is not None:
-        # Expected future contract: returns the four 0-100 signal scores
+        # Expected future contract: returns the four 0-1 signal scores
         # that compute_engagement_score consumes.
         gaze_score, pose_score, expression_score, alertness_score = preprocess(frame)
     else:
         # Placeholder until #4 lands.
-        gaze_score = pose_score = expression_score = alertness_score = 50.0
+        gaze_score = pose_score = expression_score = alertness_score = 0.50
 
     return compute_engagement_score(
         gaze_score=gaze_score,

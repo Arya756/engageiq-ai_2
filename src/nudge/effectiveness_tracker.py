@@ -19,7 +19,7 @@ from typing import Any, Dict, List, Optional
 # issue's own test snippet, e.g. `EffectivenessTracker(measurement_window=60)`),
 # so nothing here needs touching settings.py to be tunable.
 DEFAULT_MEASUREMENT_WINDOW_SECONDS = 60
-DEFAULT_EFFECTIVE_THRESHOLD = 10.0
+DEFAULT_EFFECTIVE_THRESHOLD = 0.10
 
 
 @dataclass
@@ -80,9 +80,10 @@ class EffectivenessTracker:
         Args:
             measurement_window: seconds after a nudge during which
                 post-nudge engagement scores are collected.
-            effective_threshold: minimum average score improvement (in
-                engagement-score points) for a nudge to count as
-                "effective". Per acceptance criteria: 10+.
+            effective_threshold: minimum average score improvement (on the
+                0-1 engagement-score scale) for a nudge to count as
+                "effective". Default 0.10 (a 10-percentage-point
+                improvement).
             student_id: if given along with `db`, effectiveness deltas are
                 persisted to (and stats are read from) that student's
                 `Nudge` rows in the database, across all their sessions.
@@ -119,7 +120,7 @@ class EffectivenessTracker:
             timestamp: seconds (session-relative or unix, as long as it's
                 consistent with the timestamps passed to
                 `record_post_score`).
-            pre_score: engagement score immediately before the nudge.
+            pre_score: engagement score (0-1) immediately before the nudge.
             nudge_id: the persisted `Nudge` row's id, if using DB mode --
                 required for `evaluate_last_nudge()` to write the delta
                 back to that row.
@@ -132,10 +133,10 @@ class EffectivenessTracker:
         }
 
     def record_post_score(self, timestamp: float, score: float) -> None:
-        """Log an observed engagement score. Whether it counts toward the
-        currently-pending nudge's evaluation depends only on whether its
-        timestamp falls inside that nudge's measurement window -- decided
-        at `evaluate_last_nudge()` time, not here."""
+        """Log an observed engagement score (0-1). Whether it counts
+        toward the currently-pending nudge's evaluation depends only on
+        whether its timestamp falls inside that nudge's measurement
+        window -- decided at `evaluate_last_nudge()` time, not here."""
         self._score_samples.append((timestamp, score))
 
     # ------------------------------------------------------------------
@@ -168,7 +169,7 @@ class EffectivenessTracker:
 
         post_avg = sum(relevant_scores) / len(relevant_scores)
         delta = post_avg - nudge["pre_score"]
-        effective = delta >= self.effective_threshold
+        effective = delta >= self.effective_threshold - 1e-9
 
         result = EffectivenessResult(
             nudge_type=nudge["type"],
@@ -289,16 +290,16 @@ if __name__ == "__main__":
     # directly: python -m src.nudge.effectiveness_tracker
     tracker = EffectivenessTracker(measurement_window=60)
 
-    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=35)
-    tracker.record_post_score(timestamp=30, score=55)
-    tracker.record_post_score(timestamp=60, score=65)
+    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=0.35)
+    tracker.record_post_score(timestamp=30, score=0.55)
+    tracker.record_post_score(timestamp=60, score=0.65)
     result = tracker.evaluate_last_nudge()
-    print(f"Notification: effective={result.effective}, delta={result.delta:+.1f}")
+    print(f"Notification: effective={result.effective}, delta={result.delta:+.2f}")
 
-    tracker.record_nudge(nudge_type="audio", timestamp=120, pre_score=30)
-    tracker.record_post_score(timestamp=150, score=32)
+    tracker.record_nudge(nudge_type="audio", timestamp=120, pre_score=0.30)
+    tracker.record_post_score(timestamp=150, score=0.32)
     result = tracker.evaluate_last_nudge()
-    print(f"Audio: effective={result.effective}, delta={result.delta:+.1f}")
+    print(f"Audio: effective={result.effective}, delta={result.delta:+.2f}")
 
     stats = tracker.get_stats()
     print(f"Notification rate: {stats['notification'].success_rate:.0%}")

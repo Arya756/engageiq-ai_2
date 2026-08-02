@@ -196,6 +196,27 @@ This issue was about identifying students who may need intervention before a sin
 
 ---
 
+## Issue 27
+**By:** Yuvraj
+
+Implemented the session engagement report generator (`SessionReportGenerator`, 413 lines) for both teacher and student views. Added support for generating self-contained HTML reports with session metadata, engagement timeline, state distribution, top distraction moments, and anonymized class average comparison. Reports can be rendered for dashboards, downloaded, or used as email content, and can also be persisted to the database. Additionally, standardized engagement scoring to use a 0–1 scale throughout the backend while converting values to 0–100 only for UI display.
+
+### Bug Fixes (follow-up commit `f410f58`)
+
+- **UI display scale mismatch**: `to_json_safe_dict()` was only scaling `engaged_pct` and `class_engaged_pct` to 0–100 but leaving `overall_average`, `class_average`, all `timeline[*].average`, `class_timeline[*].average`, and distraction moment `value`/`baseline` on the 0–1 scale. With Chart.js y-axis set to `{ min: 0, max: 100 }`, these values visually clustered at the bottom. Now all UI-facing values are correctly scaled.
+- **Stale error message**: `state_machine.py:312` said `"score 100"` but the check was against `1`. Fixed to match.
+- **Stale docstrings/comments**: Updated outdated "0–100" references across `state_machine.py`, `class_aggregator.py`, `websocket.py`, and `effectiveness_tracker.py`.
+- **Missing test coverage**: Added `tests/test_session_report.py` with 14 tests covering both class and student scopes, JSON scaling, HTML rendering, DB persistence, state distribution, and edge cases.
+
+### Test Results
+
+189 tests passing (including 14 new session report tests).
+
+### Known Limitation
+
+`test_migrations.py` uses the new `report_type="session_summary"` but no Alembic data migration renames existing `class_summary` rows. If any deployed DB already has `class_summary` rows, they won't be picked up by the new queries. Verify against Alembic history before merging to production.
+
+---
 ## Issue 30
 **By:** Gargi
 
