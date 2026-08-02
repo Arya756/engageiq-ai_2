@@ -217,3 +217,9 @@ Implemented the session engagement report generator (`SessionReportGenerator`, 4
 `test_migrations.py` uses the new `report_type="session_summary"` but no Alembic data migration renames existing `class_summary` rows. If any deployed DB already has `class_summary` rows, they won't be picked up by the new queries. Verify against Alembic history before merging to production.
 
 ---
+## Issue 30
+**By:** Gargi
+
+This issue was about finding lecture topics that consistently caused engagement to drop across multiple class sessions. I implemented the `DifficultyCorrelator` to store session timelines and reused the existing `ClassAggregator.detect_dips()` method to identify engagement dips. I calculated the average engagement drop and severity for each recurring difficult segment, filtered the results based on the minimum number of sessions and ranked them by severity. I also wrote unit tests to cover the main functionality and edge cases and verified the implementation by running formatting, linting and the complete project test suite successfully.
+
+---
