@@ -196,6 +196,17 @@ This issue was about identifying students who may need intervention before a sin
 
 ---
 
+## Issue 26
+**By:** Ayush Aryan
+
+This issue was about allowing teachers to export engagement data in standard CSV and JSON formats so they can analyze it in external tools like Excel or use it for reporting. 
+
+To build this data portability feature, I implemented:
+1. **Export API Endpoints (`src/api/routes/export.py` & `src/api/main.py`):** Created `GET` endpoints at `/api/export/sessions/{id}` and `/api/export/courses/{id}` that fetch and stream engagement log data. I used SQLAlchemy's `yield_per` and FastAPI's `StreamingResponse` so that exporting huge datasets (1,000+ rows) streams smoothly without overloading the server's memory.
+2. **Data Export & Privacy:** The exports output the exact engagement logs saved in the database. To protect student privacy, the real user IDs are automatically hashed into an anonymized format (e.g., `anon_<hash>`) before the file is sent. 
+3. **Frontend Export Button (`ExportButton.jsx`):** Developed a reusable button component that handles downloading files cleanly by dynamically building query parameters for format (`csv` or `json`) and optional filters (date range and specific student IDs).
+
+
 ## Issue 27
 **By:** Yuvraj
 

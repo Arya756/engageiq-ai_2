@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.api.routes.auth import router as auth_router
 from src.api.routes.courses import router as courses_router
+from src.api.routes.export import router as export_router
 from src.api.routes.preferences import router as preferences_router
 from src.api.routes.users import router as users_router
 from src.api.websocket import router as websocket_router
@@ -29,6 +30,7 @@ app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(courses_router)
 app.include_router(preferences_router)
+app.include_router(export_router)
 
 
 @app.get("/health")
