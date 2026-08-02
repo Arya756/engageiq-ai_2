@@ -1,8 +1,8 @@
 """Tests for session report generator — Issue #27."""
 
-import pytest
 from datetime import datetime, timedelta, timezone
 
+import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
