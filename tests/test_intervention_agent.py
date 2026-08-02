@@ -1,7 +1,6 @@
 from unittest.mock import MagicMock, patch
 
 from src.agents.intervention_agent import (
-    InterventionSuggestion,
     build_prompt,
     generate_suggestions,
 )
