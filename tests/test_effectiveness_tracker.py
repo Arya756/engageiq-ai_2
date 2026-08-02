@@ -7,35 +7,35 @@ def test_issue_snippet_notification_effective():
     # Exactly the issue's own worked example.
     tracker = EffectivenessTracker(measurement_window=60)
 
-    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=35)
-    tracker.record_post_score(timestamp=30, score=55)
-    tracker.record_post_score(timestamp=60, score=65)
+    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=0.35)
+    tracker.record_post_score(timestamp=30, score=0.55)
+    tracker.record_post_score(timestamp=60, score=0.65)
     result = tracker.evaluate_last_nudge()
 
     assert result.effective is True
-    assert result.delta == pytest.approx(25.0)
+    assert result.delta == pytest.approx(0.25)
 
 
 def test_issue_snippet_audio_not_effective():
     tracker = EffectivenessTracker(measurement_window=60)
-    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=35)
-    tracker.record_post_score(timestamp=30, score=55)
-    tracker.record_post_score(timestamp=60, score=65)
+    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=0.35)
+    tracker.record_post_score(timestamp=30, score=0.55)
+    tracker.record_post_score(timestamp=60, score=0.65)
     tracker.evaluate_last_nudge()
 
-    tracker.record_nudge(nudge_type="audio", timestamp=120, pre_score=30)
-    tracker.record_post_score(timestamp=150, score=32)
+    tracker.record_nudge(nudge_type="audio", timestamp=120, pre_score=0.30)
+    tracker.record_post_score(timestamp=150, score=0.32)
     result = tracker.evaluate_last_nudge()
 
     assert result.effective is False
-    assert result.delta == pytest.approx(2.0)
+    assert result.delta == pytest.approx(0.02)
 
 
 def test_issue_snippet_success_rate():
     tracker = EffectivenessTracker(measurement_window=60)
-    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=35)
-    tracker.record_post_score(timestamp=30, score=55)
-    tracker.record_post_score(timestamp=60, score=65)
+    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=0.35)
+    tracker.record_post_score(timestamp=30, score=0.55)
+    tracker.record_post_score(timestamp=60, score=0.65)
     tracker.evaluate_last_nudge()
 
     stats = tracker.get_stats()
@@ -44,18 +44,18 @@ def test_issue_snippet_success_rate():
 
 def test_effective_boundary_exactly_10_points_counts_as_effective():
     tracker = EffectivenessTracker(measurement_window=60)
-    tracker.record_nudge(nudge_type="overlay", timestamp=0, pre_score=40)
-    tracker.record_post_score(timestamp=30, score=50)  # exactly +10
+    tracker.record_nudge(nudge_type="overlay", timestamp=0, pre_score=0.40)
+    tracker.record_post_score(timestamp=30, score=0.50)  # exactly +0.10
     result = tracker.evaluate_last_nudge()
 
-    assert result.delta == pytest.approx(10.0)
+    assert result.delta == pytest.approx(0.10)
     assert result.effective is True
 
 
 def test_score_outside_window_is_excluded():
     tracker = EffectivenessTracker(measurement_window=60)
-    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=35)
-    tracker.record_post_score(timestamp=90, score=90)  # outside the 60s window
+    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=0.35)
+    tracker.record_post_score(timestamp=90, score=0.90)  # outside the 60s window
     result = tracker.evaluate_last_nudge()
 
     # No in-window samples -> nothing to evaluate.
@@ -64,7 +64,7 @@ def test_score_outside_window_is_excluded():
 
 def test_no_post_scores_recorded_returns_none():
     tracker = EffectivenessTracker(measurement_window=60)
-    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=35)
+    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=0.35)
     result = tracker.evaluate_last_nudge()
     assert result is None
 
@@ -77,16 +77,16 @@ def test_evaluate_with_no_pending_nudge_returns_none():
 def test_multiple_nudge_types_tracked_independently():
     tracker = EffectivenessTracker(measurement_window=60)
 
-    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=35)
-    tracker.record_post_score(timestamp=30, score=60)  # +25, effective
+    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=0.35)
+    tracker.record_post_score(timestamp=30, score=0.60)  # +0.25, effective
     tracker.evaluate_last_nudge()
 
-    tracker.record_nudge(nudge_type="audio", timestamp=100, pre_score=30)
-    tracker.record_post_score(timestamp=130, score=31)  # +1, not effective
+    tracker.record_nudge(nudge_type="audio", timestamp=100, pre_score=0.30)
+    tracker.record_post_score(timestamp=130, score=0.31)  # +0.01, not effective
     tracker.evaluate_last_nudge()
 
-    tracker.record_nudge(nudge_type="audio", timestamp=200, pre_score=30)
-    tracker.record_post_score(timestamp=230, score=45)  # +15, effective
+    tracker.record_nudge(nudge_type="audio", timestamp=200, pre_score=0.30)
+    tracker.record_post_score(timestamp=230, score=0.45)  # +0.15, effective
     tracker.evaluate_last_nudge()
 
     stats = tracker.get_stats()
@@ -99,26 +99,26 @@ def test_multiple_nudge_types_tracked_independently():
 
 def test_average_of_multiple_post_scores_in_window():
     tracker = EffectivenessTracker(measurement_window=60)
-    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=40)
-    tracker.record_post_score(timestamp=10, score=50)
-    tracker.record_post_score(timestamp=20, score=60)
-    tracker.record_post_score(timestamp=30, score=40)
+    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=0.40)
+    tracker.record_post_score(timestamp=10, score=0.50)
+    tracker.record_post_score(timestamp=20, score=0.60)
+    tracker.record_post_score(timestamp=30, score=0.40)
     result = tracker.evaluate_last_nudge()
 
-    # avg of [50, 60, 40] = 50; delta = 50 - 40 = 10
-    assert result.post_score_avg == pytest.approx(50.0)
-    assert result.delta == pytest.approx(10.0)
+    # avg of [0.50, 0.60, 0.40] = 0.50; delta = 0.50 - 0.40 = 0.10
+    assert result.post_score_avg == pytest.approx(0.50)
+    assert result.delta == pytest.approx(0.10)
     assert result.sample_count == 3
 
 
 def test_to_decision_history_matches_decision_agent_shape():
     tracker = EffectivenessTracker(measurement_window=60)
-    tracker.record_nudge(nudge_type="gentle_reminder", timestamp=0, pre_score=35)
-    tracker.record_post_score(timestamp=30, score=60)
+    tracker.record_nudge(nudge_type="gentle_reminder", timestamp=0, pre_score=0.35)
+    tracker.record_post_score(timestamp=30, score=0.60)
     tracker.evaluate_last_nudge()
 
-    tracker.record_nudge(nudge_type="focus_check", timestamp=100, pre_score=30)
-    tracker.record_post_score(timestamp=130, score=31)
+    tracker.record_nudge(nudge_type="focus_check", timestamp=100, pre_score=0.30)
+    tracker.record_post_score(timestamp=130, score=0.31)
     tracker.evaluate_last_nudge()
 
     history = tracker.to_decision_history()
@@ -133,12 +133,12 @@ def test_to_decision_history_matches_decision_agent_shape():
 
 
 def test_custom_effective_threshold():
-    tracker = EffectivenessTracker(measurement_window=60, effective_threshold=20.0)
-    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=35)
-    tracker.record_post_score(timestamp=30, score=50)  # +15, below custom threshold
+    tracker = EffectivenessTracker(measurement_window=60, effective_threshold=0.20)
+    tracker.record_nudge(nudge_type="notification", timestamp=0, pre_score=0.35)
+    tracker.record_post_score(timestamp=30, score=0.50)  # +0.15, below custom threshold
     result = tracker.evaluate_last_nudge()
 
-    assert result.delta == pytest.approx(15.0)
+    assert result.delta == pytest.approx(0.15)
     assert result.effective is False
 
 
@@ -188,7 +188,7 @@ def test_db_persistence_mode_writes_delta_back_to_nudge_row():
         id=1,
         user_id=42,
         nudge_type="notification",
-        effectiveness_delta=25.0,
+        effectiveness_delta=0.25,
         created_at=None,
     )
     new_row = FakeNudgeRow(
@@ -201,12 +201,12 @@ def test_db_persistence_mode_writes_delta_back_to_nudge_row():
     fake_db = FakeDB([existing_row, new_row])
 
     tracker = EffectivenessTracker(measurement_window=60, student_id=42, db=fake_db)
-    tracker.record_nudge(nudge_type="audio", timestamp=0, pre_score=30, nudge_id=2)
-    tracker.record_post_score(timestamp=30, score=32)
+    tracker.record_nudge(nudge_type="audio", timestamp=0, pre_score=0.30, nudge_id=2)
+    tracker.record_post_score(timestamp=30, score=0.32)
     result = tracker.evaluate_last_nudge()
 
-    assert result.delta == pytest.approx(2.0)
-    assert new_row.effectiveness_delta == pytest.approx(2.0)  # persisted
+    assert result.delta == pytest.approx(0.02)
+    assert new_row.effectiveness_delta == pytest.approx(0.02)  # persisted
     assert fake_db.committed is True
 
     stats = tracker.get_stats()
