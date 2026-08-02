@@ -85,7 +85,11 @@ def seeded(db):
                     user_id=student.id,
                     timestamp=now + timedelta(minutes=i * 10),
                     engagement_score=score,
-                    state=EngagementState.ENGAGED if score > 0.7 else EngagementState.PASSIVE,
+                    state=(
+                        EngagementState.ENGAGED
+                        if score > 0.7
+                        else EngagementState.PASSIVE
+                    ),
                 )
             )
     db.commit()
@@ -117,9 +121,9 @@ class TestSessionReportData:
         report = gen.generate(seeded["session_id"])
         d = report.to_json_safe_dict()
         for point in d["timeline"]:
-            assert point["average"] >= 1.0 or point["average"] == 0.0, (
-                f"timeline average {point['average']} should be on 0-100 scale"
-            )
+            assert (
+                point["average"] >= 1.0 or point["average"] == 0.0
+            ), f"timeline average {point['average']} should be on 0-100 scale"
 
     def test_to_json_safe_dict_scales_class_average(self, seeded):
         gen = SessionReportGenerator(seeded["db"])
