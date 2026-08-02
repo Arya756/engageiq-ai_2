@@ -120,7 +120,9 @@ class SessionReportData:
             "state_distribution": [asdict(s) for s in self.state_distribution],
             "distraction_moments": [d.to_json_safe() for d in self.distraction_moments],
             "class_average": (
-                round(self.class_average * 100, 1) if self.class_average is not None else None
+                round(self.class_average * 100, 1)
+                if self.class_average is not None
+                else None
             ),
             "class_engaged_pct": (
                 round(self.class_engaged_pct * 100, 1)

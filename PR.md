@@ -228,6 +228,14 @@ Implemented the session engagement report generator (`SessionReportGenerator`, 4
 `test_migrations.py` uses the new `report_type="session_summary"` but no Alembic data migration renames existing `class_summary` rows. If any deployed DB already has `class_summary` rows, they won't be picked up by the new queries. Verify against Alembic history before merging to production.
 
 ---
+
+## Issue 29
+**By:** Gargi
+
+This issue was about building an LLM powered intervention agent that analyzes session engagement data and generates actionable teaching suggestions. I implemented the agent using LangGraph and Groq, integrated it with the existing session report generator and categorized the suggestions into Content, Delivery and Structure. While working on it I faced a few setup issues because the local database was not configured, Docker and PostgreSQL were not running and the database had no seeded data. After setting up Docker, running the migrations and seeding the database the agent started working correctly. I also improved the prompt so the model follows a consistent response format, updated the parser to handle the generated output reliably and added unit tests covering empty reports, suggestion generation and invalid responses. Finally I verified the complete flow by generating intervention suggestions successfully from a sample session.
+
+---
+
 ## Issue 30
 **By:** Gargi
 
