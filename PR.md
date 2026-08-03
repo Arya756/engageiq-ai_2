@@ -229,6 +229,13 @@ Implemented the session engagement report generator (`SessionReportGenerator`, 4
 
 ---
 
+## Issue 28
+
+**By:** Aparna Singh
+
+This issue was about generating a comprehensive weekly engagement report that summarizes student engagement across all lectures in a course for a given ISO week. I implemented the WeeklyReportGenerator to aggregate weekly engagement data, generate lecture engagement curves, analyze day-of-week and time-of-day engagement patterns, compare engagement with the previous week, identify anonymized at-risk students using the existing RiskIdentifier, and rank difficult lecture segments using the existing DifficultyCorrelator. I also developed a responsive Jinja2 HTML template with support for HTML and PDF export, handled edge cases such as empty weeks and timezone differences, and added unit tests covering report generation, rendering, serialization, persistence, CLI execution, performance, and regression scenarios. Finally, I verified the implementation by running the weekly report test suite as well as the complete project test suite successfully.
+
+---
 ## Issue 29
 **By:** Gargi
 
