@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Report - {{ report.course_name }} ({{ report.iso_week }})</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            margin: 0;
+            padding: 32px 16px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            font-size: 22px;
+            margin: 0 0 4px 0;
+        }
+
+        h2 {
+            font-size: 16px;
+            margin: 0 0 12px 0;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .banner {
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            color: #9a3412;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* All four summary cards share this layout so they line up evenly
+           regardless of how much content is inside each one. */
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            min-height: 64px;
+        }
+
+        .meta-item .label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .meta-item .value {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 2px;
+            flex-grow: 1;
+        }
+
+        .meta-item .value.small {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .meta-item .value-date {
+            font-size: 12px;
+            font-weight: 400;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 700px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        table th,
+        table td {
+            text-align: left;
+            padding: 8px 6px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        table th {
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.03em;
+        }
+
+        .no-data {
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .anon-note {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .pill.up {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .pill.down {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .pill.flat {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .pill.no_data {
+            background: #f1f5f9;
+            color: #94a3b8;
+        }
+
+        /* Reason badges in the At-Risk table, replacing a bulleted list */
+        .reason-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #fef2f2;
+            color: #b91c1c;
+            margin: 2px 4px 2px 0;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .compare-grid .value {
+            font-size: 26px;
+            font-weight: 700;
+        }
+
+        .compare-grid .label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .compare-arrow {
+            font-size: 15px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .compare-arrow.up {
+            color: #16a34a;
+        }
+
+        .compare-arrow.down {
+            color: #dc2626;
+        }
+
+        .compare-arrow.flat,
+        .compare-arrow.no_data {
+            color: #94a3b8;
+        }
+
+        .risk-count {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .risk-count .of-total {
+            font-size: 15px;
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        ol.segments {
+            padding-left: 22px;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        ol.segments li {
+            margin-bottom: 10px;
+        }
+
+        ol.segments .segment-meta {
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .footer .footer-sep {
+            margin: 0 6px;
+        }
+
+        /* Respect the OS-level motion preference by dropping any future
+           transition/animation additions; nothing currently animates, but
+           this keeps the report safe if that changes later. */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+
+        /* PDF/print: flatten card shadows, tighten margins, and avoid
+           splitting a table or card across a page break. */
+        @media print {
+            body {
+                background: #ffffff;
+                padding: 0;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1px solid #e2e8f0;
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 12px;
+            }
+
+            table {
+                break-inside: avoid;
+            }
+
+            tr {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="card">
+            <h1>{{ report.course_name }}{% if report.course_code %} ({{ report.course_code }}){% endif %}</h1>
+            <div class="subtitle">Weekly Report &middot; {{ report.iso_week }} &middot; {{ report.week_start |
+                friendly_date }} to {{ report.week_end | friendly_date }}</div>
+
+            {% if not report.has_data %}
+            <div class="banner">No lectures were recorded this week, so there's no engagement data to report yet.
+            </div>
+            {% endif %}
+
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <div class="label">Average Engagement</div>
+                    <div class="value">{% if report.has_data %}{{ report.week_summary.average_engagement }}%{% else
+                        %}&mdash;{% endif %}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="label">Highest Lecture</div>
+                    {% if report.week_summary.highest_lecture %}
+                    <div class="value small">{{ report.week_summary.highest_lecture.title }} ({{
+                        report.week_summary.highest_lecture.average }}%)</div>
+                    <div class="value-date">{{ report.week_summary.highest_lecture.start_time | friendly_date }}
+                    </div>
+                    {% else %}
+                    <div class="value small">&mdash;</div>
+                    {% endif %}
+                </div>
+                <div class="meta-item">
+                    <div class="label">Lowest Lecture</div>
+                    {% if report.week_summary.lowest_lecture %}
+                    <div class="value small">{{ report.week_summary.lowest_lecture.title }} ({{
+                        report.week_summary.lowest_lecture.average }}%)</div>
+                    <div class="value-date">{{ report.week_summary.lowest_lecture.start_time | friendly_date }}</div>
+                    {% else %}
+                    <div class="value small">&mdash;</div>
+                    {% endif %}
+                </div>
+                <div class="meta-item">
+                    <div class="label">Students</div>
+                    <div class="value">{{ report.week_summary.student_count }}</div>
+                </div>
+                <div class="meta-item">
+                    <div class="label">Lectures</div>
+                    <div class="value">{{ report.week_summary.lecture_count }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Lecture Engagement Curves</h2>
+            {% if lecture_curves_svg %}
+            {{ lecture_curves_svg | safe }}
+            {% else %}
+            <p class="no-data">No lectures were recorded this week.</p>
+            {% endif %}
+        </div>
+
+        <div class="two-col">
+            <div class="card">
+                <h2>Day-of-Week Pattern</h2>
+                {% if report.day_pattern and report.has_data %}
+                {{ day_pattern_svg | safe }}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>Avg. Engagement</th>
+                            <th>Logs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in report.day_pattern %}
+                        <tr>
+                            <td>{{ d.day_name }}</td>
+                            <td>{% if d.log_count %}{{ d.average }}%{% else %}&mdash;{% endif %}</td>
+                            <td>{{ d.log_count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="no-data">No lectures were recorded this week.</p>
+                {% endif %}
+            </div>
+
+            <div class="card">
+                <h2>Time-of-Day Pattern</h2>
+                {% if report.time_pattern and report.has_data %}
+                {{ time_pattern_svg | safe }}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th>Avg. Engagement</th>
+                            <th>Logs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in report.time_pattern %}
+                        <tr>
+                            <td>{{ t.period }}</td>
+                            <td>{% if t.log_count %}{{ t.average }}%{% else %}&mdash;{% endif %}</td>
+                            <td>{{ t.log_count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="no-data">No lectures were recorded this week.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Week-over-Week Comparison</h2>
+            {% if report.week_comparison.trend != 'no_data' %}
+            <div class="compare-grid">
+                <div>
+                    <div class="label">Previous Week</div>
+                    <div class="value">{{ report.week_comparison.previous_week_avg }}%</div>
+                </div>
+                <div class="compare-arrow {{ report.week_comparison.trend }}">
+                    {{ report.week_comparison.trend | trend_text }}
+                    <div style="font-size:12px; font-weight:600; margin-top:2px;">{{
+                        report.week_comparison.delta_pct | signed_pct }}</div>
+                </div>
+                <div>
+                    <div class="label">Current Week</div>
+                    <div class="value">{{ report.week_comparison.current_week_avg }}%</div>
+                </div>
+            </div>
+            {% else %}
+            <p class="no-data">No engagement data available for last week, current week, or both &mdash; a comparison
+                isn't possible yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="two-col">
+            <div class="card">
+                <h2>At-Risk Students</h2>
+                <div class="risk-count">{{ report.at_risk.count }} <span class="of-total">of {{
+                        report.at_risk.total_students }}</span></div>
+                {% if report.at_risk.entries %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Avg. Score</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for e in report.at_risk.entries %}
+                        <tr>
+                            <td>{{ e.student_id }}</td>
+                            <td>{% if e.average_score is not none %}{{ e.average_score }}%{% else %}&mdash;{% endif %}
+                            </td>
+                            <td>
+                                {% if e.reasons %}
+                                {% for r in e.reasons %}<span class="reason-badge">{{ r }}</span>{% endfor %}
+                                {% else %}&mdash;{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="no-data">No students were identified as at-risk this week.</p>
+                {% endif %}
+                <div class="anon-note">Student IDs are anonymized &mdash; no individual student is identified unless
+                    they've opted in.</div>
+            </div>
+
+            <div class="card">
+                <h2>Difficult Segments</h2>
+                {% if report.difficult_segments %}
+                <ol class="segments">
+                    {% for s in report.difficult_segments %}
+                    <li>
+                        <strong>{{ s.lecture_title }}</strong> &middot; {{ s.minute | minute_range }}
+                        <div class="segment-meta">{{ s.avg_drop_pct }}% avg. drop &middot; seen in {{ s.session_count }}
+                            lecture{{ 's' if s.session_count != 1 else '' }}</div>
+                    </li>
+                    {% endfor %}
+                </ol>
+                {% else %}
+                <p class="no-data">No significant engagement drops were detected this week.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="footer">
+            {{ report.course_name }}{% if report.course_code %} ({{ report.course_code }}){% endif %}
+            <span class="footer-sep">&middot;</span>{{ report.iso_week }}
+            <span class="footer-sep">&middot;</span>Generated {{ report.generated_at | friendly_datetime }}
+            <span class="footer-sep">&middot;</span>EngageIQ AI
+        </div>
+    </div>
+</body>
+
+</html>
