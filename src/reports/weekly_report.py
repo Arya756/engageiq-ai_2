@@ -114,6 +114,7 @@ def minute_range(minute):
 @dataclass
 class LectureRef:
     """Lightweight pointer to a single lecture."""
+
     session_id: int
     title: str
     average: float
@@ -138,6 +139,7 @@ class WeekSummary:
 @dataclass
 class LectureCurve:
     """Per-lecture engagement curve for the week's overlaid line chart."""
+
     session_id: int
     title: str
     start_time: datetime
@@ -216,6 +218,7 @@ class WeeklyReportData:
 
     def to_json_safe_dict(self) -> dict:
         """JSON-safe form for DB persistence and template embedding."""
+
         def pct(value: Optional[float]) -> Optional[float]:
             return round(value * 100, 1) if value is not None else None
 
@@ -332,12 +335,12 @@ class WeeklyReportGenerator:
         self._jinja_env.filters["minute_range"] = minute_range
 
     # ---- validation -----------------------------------------------------
-    
+
     def _validate_inputs(self, course_id: int, iso_week: str) -> None:
         """Ensure inputs are structurally valid before hitting the DB."""
         if not isinstance(course_id, int) or course_id <= 0:
             raise ValueError("course_id must be a positive integer")
-            
+
         if not iso_week or not _ISO_WEEK_RE.match(iso_week):
             raise ValueError(
                 f"Invalid ISO week '{iso_week}': expected format 'YYYY-Www', e.g. '2026-W24'"
@@ -347,7 +350,7 @@ class WeeklyReportGenerator:
 
     def generate(self, course_id: int, iso_week: str) -> WeeklyReportData:
         self._validate_inputs(course_id, iso_week)
-        
+
         start = time.perf_counter()
         week_start, week_end = self._parse_iso_week(iso_week)
 
@@ -528,14 +531,22 @@ class WeeklyReportGenerator:
     ) -> Dict[int, float]:
         aggregator = ClassAggregator()
         buckets: Dict[int, List[float]] = defaultdict(list)
-        
-        sess_ts = session.start_time.replace(tzinfo=None) if session.start_time.tzinfo else session.start_time
-        
+
+        sess_ts = (
+            session.start_time.replace(tzinfo=None)
+            if session.start_time.tzinfo
+            else session.start_time
+        )
+
         for log in session_logs:
-            log_ts = log.timestamp.replace(tzinfo=None) if log.timestamp.tzinfo else log.timestamp
+            log_ts = (
+                log.timestamp.replace(tzinfo=None)
+                if log.timestamp.tzinfo
+                else log.timestamp
+            )
             minute = int((log_ts - sess_ts).total_seconds() // 60)
             buckets[minute].append(log.engagement_score)
-            
+
         for minute, scores in buckets.items():
             aggregator.update_timeline(minute, scores)
         return aggregator.get_timeline()
@@ -909,6 +920,7 @@ def _bar_chart_svg(labels: List[str], values: List[float]) -> str:
 # --------------------------------------------------------------------------
 # CLI
 # --------------------------------------------------------------------------
+
 
 def _main() -> None:
     parser = argparse.ArgumentParser(description="Generate a weekly engagement report.")
