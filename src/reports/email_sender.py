@@ -43,7 +43,12 @@ class EmailSender:
             print("Teacher has disabled email notifications.")
             return "skipped"
         generator = SessionReportGenerator(self.db)
-        html = generator.generate_and_render(session_id)
+        report_html = generator.generate_and_render(session_id)
+
+        html = self._render_template(
+            "email_session.html",
+            report_html,
+        )
 
         return self._send_email(
             to=to,
@@ -52,6 +57,7 @@ class EmailSender:
             fallback_filename=f"session_report_{session_id}.html",
         )
 
+
     def weekly_email(self, to: str, course_id: int, week: str) -> str:
         course = self.db.get(Course, course_id)
         if course and course.teacher and not course.teacher.notification_enabled:
@@ -59,7 +65,12 @@ class EmailSender:
             print("Teacher has disabled email notifications.")
             return "skipped"
         generator = WeeklyReportGenerator(self.db)
-        html = generator.generate_and_render(course_id, week)
+        report_html = generator.generate_and_render(course_id, week)
+
+        html = self._render_template(
+            "email_weekly.html",
+            report_html,
+        )
 
         return self._send_email(
             to=to,
