@@ -57,7 +57,6 @@ class EmailSender:
             fallback_filename=f"session_report_{session_id}.html",
         )
 
-
     def weekly_email(self, to: str, course_id: int, week: str) -> str:
         course = self.db.get(Course, course_id)
         if course and course.teacher and not course.teacher.notification_enabled:
