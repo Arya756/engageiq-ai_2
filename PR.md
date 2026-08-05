@@ -249,3 +249,12 @@ This issue was about building an LLM powered intervention agent that analyzes se
 This issue was about finding lecture topics that consistently caused engagement to drop across multiple class sessions. I implemented the `DifficultyCorrelator` to store session timelines and reused the existing `ClassAggregator.detect_dips()` method to identify engagement dips. I calculated the average engagement drop and severity for each recurring difficult segment, filtered the results based on the minimum number of sessions and ranked them by severity. I also wrote unit tests to cover the main functionality and edge cases and verified the implementation by running formatting, linting and the complete project test suite successfully.
 
 ---
+
+## Issue 31
+
+**By:** Gargi
+
+This issue was about automating email delivery for engagement reports so teachers can receive session and weekly reports without sending them manually. I implemented email delivery for both session and weekly reports, integrated SendGrid with a graceful HTML fallback when an API key is not configured, added APScheduler to automatically schedule session reports after class completion and weekly reports every Monday at 8 AM, implemented an email rate limiter to prevent excessive email sending and added support for teacher notification preferences so reports are not sent when email notifications are disabled. While implementing the feature I found that the generated reports were complete HTML documents which resulted in nested HTML inside the email templates, so I extracted only the report body before rendering the templates to generate clean email content. Finally I added unit tests for the email sender, scheduler and rate limiter and verified the implementation by running formatting, linting and the complete project test suite successfully with all 311 tests passing. 
+
+---
+
