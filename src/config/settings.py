@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     groq_api_key: str = ""
     groq_model: str = "llama-3.3-70b-versatile"
 
+    # Email
+    sendgrid_api_key: str = ""
+    email_from: str = "noreply@engageiq.ai"
+
     # Webcam
     webcam_index: int = 0
     webcam_fps: int = 15

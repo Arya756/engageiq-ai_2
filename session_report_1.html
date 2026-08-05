@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session Report - Python Basics 1</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f8fafc; color: #1e293b; margin: 0; padding: 32px 16px; }
+  .container { max-width: 900px; margin: 0 auto; }
+  .card { background: #ffffff; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  h1 { font-size: 22px; margin: 0 0 4px 0; }
+  .subtitle { color: #64748b; font-size: 14px; margin-bottom: 4px; }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-top: 16px; }
+  .meta-item .label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; }
+  .meta-item .value { font-size: 20px; font-weight: 600; margin-top: 2px; }
+  h2 { font-size: 16px; margin: 0 0 12px 0; }
+  .charts-row { display: flex; flex-wrap: wrap; gap: 20px; }
+  .chart-box { flex: 1 1 380px; }
+  canvas { max-width: 100%; }
+  ul.moments { list-style: none; padding: 0; margin: 0; }
+  ul.moments li { padding: 10px 12px; border-left: 3px solid #f97316; background: #fff7ed; border-radius: 6px; margin-bottom: 8px; font-size: 14px; }
+  ul.moments li .time { font-weight: 600; margin-right: 8px; }
+  .no-data { color: #94a3b8; font-style: italic; font-size: 14px; }
+  .footer { text-align: center; color: #94a3b8; font-size: 12px; margin-top: 8px; }
+  .anon-note { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+  .chart-wrap { position: relative; height: 260px; }
+  .chart-wrap.small { height: 220px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="card">
+    <h1>Introduction to Python (CS101)</h1>
+    <div class="subtitle">Python Basics 1 &middot; 2026-07-31T17:00:07.583541</div>
+    
+    <div class="meta-grid">
+      <div class="meta-item"><div class="label">Class Average</div><div class="value">54.2</div></div>
+      <div class="meta-item"><div class="label">Engaged</div><div class="value">30.0%</div></div>
+      <div class="meta-item"><div class="label">Duration</div><div class="value">60.0 min</div></div>
+      <div class="meta-item"><div class="label">Students</div><div class="value">10</div></div>
+    </div>
+    <div class="anon-note">Class-level view &middot; individual students are never identified.</div>
+    
+  </div>
+
+  <div class="card">
+    <h2>Engagement Timeline</h2>
+    
+    <div class="chart-wrap"><canvas id="timelineChart"></canvas></div>
+    
+  </div>
+
+  <div class="card charts-row">
+    <div class="chart-box">
+      <h2>State Distribution</h2>
+      <div class="chart-wrap small"><canvas id="stateChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h2>Top Distraction Moments</h2>
+      
+      <p class="no-data">No significant engagement dips detected.</p>
+      
+    </div>
+  </div>
+
+  <div class="footer">Generated 2026-08-05T05:18:37.082555+00:00 &middot; EngageIQ AI</div>
+</div>
+
+<script>
+  const timelineData = [{"minute": 0, "average": 55.9}, {"minute": 10, "average": 57.4}, {"minute": 20, "average": 53.0}, {"minute": 30, "average": 52.8}, {"minute": 40, "average": 52.0}];
+  const stateData = [{"state": "engaged", "count": 11, "percentage": 22.0}, {"state": "passive", "count": 12, "percentage": 24.0}, {"state": "distracted", "count": 7, "percentage": 14.0}, {"state": "drowsy", "count": 12, "percentage": 24.0}, {"state": "confused", "count": 8, "percentage": 16.0}];
+  const classTimelineData = null;
+
+  if (timelineData.length > 0) {
+    const datasets = [{
+      label: 'Class average engagement',
+      data: timelineData.map(function (p) { return p.average; }),
+      borderColor: '#3b82f6',
+      backgroundColor: 'rgba(59,130,246,0.1)',
+      tension: 0.3,
+      fill: true,
+      pointRadius: 2,
+    }];
+    if (classTimelineData) {
+      datasets.push({
+        label: 'Class average',
+        data: classTimelineData.map(function (p) { return p.average; }),
+        borderColor: '#94a3b8',
+        borderDash: [5, 5],
+        backgroundColor: 'transparent',
+        tension: 0.3,
+        fill: false,
+        pointRadius: 0,
+      });
+    }
+    new Chart(document.getElementById('timelineChart'), {
+      type: 'line',
+      data: { labels: timelineData.map(function (p) { return 'min ' + p.minute; }), datasets: datasets },
+      options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100 } }, plugins: { legend: { display: classTimelineData !== null } } }
+    });
+  }
+
+  const stateColors = { engaged: '#22c55e', passive: '#eab308', distracted: '#f97316', drowsy: '#ef4444', confused: '#8b5cf6' };
+
+  new Chart(document.getElementById('stateChart'), {
+    type: 'pie',
+    data: {
+      labels: stateData.map(function (s) { return s.state; }),
+      datasets: [{ data: stateData.map(function (s) { return s.percentage; }), backgroundColor: stateData.map(function (s) { return stateColors[s.state] || '#94a3b8'; }) }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+  });
+</script>
+</body>
+</html>
