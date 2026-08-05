@@ -39,6 +39,7 @@ websockets>=12.0
 python-multipart>=0.0.9
 pydantic>=2.7.0
 pydantic-settings>=2.3.0
+apscheduler>=3.11.3
 
 # Database
 sqlalchemy>=2.0.30
