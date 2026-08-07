@@ -10,6 +10,7 @@ from src.api.routes.preferences import router as preferences_router
 from src.api.routes.users import router as users_router
 from src.api.websocket import router as websocket_router
 from src.config.settings import settings
+from src.reports.scheduler import shutdown_scheduler, start_scheduler
 
 app = FastAPI(
     title="EngageIQ AI",
@@ -31,6 +32,18 @@ app.include_router(users_router)
 app.include_router(courses_router)
 app.include_router(preferences_router)
 app.include_router(export_router)
+
+
+@app.on_event("startup")
+def startup():
+    """Start background scheduler."""
+    start_scheduler()
+
+
+@app.on_event("shutdown")
+def shutdown():
+    """Stop background scheduler."""
+    shutdown_scheduler()
 
 
 @app.get("/health")
