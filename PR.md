@@ -258,6 +258,17 @@ This issue was about automating email delivery for engagement reports so teacher
 
 ---
 
+## Issue 32
+**By:** Aparna Singh
+
+This issue was about building the student-facing dashboard that brings together engagement analytics into a single interface. I implemented the main `StudentDashboard` page along with reusable components for engagement history, focus streaks, session history, and personalized improvement tips.
+
+The dashboard fetches student analytics from the backend API, supports loading, error, and empty states, and uses a responsive grid layout for tablet and desktop screens. The engagement chart displays the most recent seven sessions with interactive visualization, the focus streak calculates consecutive sessions above the engagement threshold, the session history presents recent learning activity in chronological order, and the improvement tips panel displays personalized recommendations with accessible, defensive rendering.
+
+The components were designed with accessibility, responsive layouts, defensive handling of missing data, and reusable React patterns using hooks such as `useMemo`, `useCallback`, and `useEffect`. Since the repository currently does not include the frontend build configuration (`package.json` or Vite/React setup), runtime verification using `npm run dev` could not be performed. The implementation was therefore completed according to the project structure and issue requirements.
+
+---
+
 ## Issue 33
 **By:** Ayush Aryan
 
